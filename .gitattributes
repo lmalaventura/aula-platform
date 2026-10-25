@@ -1,0 +1,8 @@
+# Testo con fine riga LF; i file binari rimangono inalterati.
+* text=auto eol=lf
+*.pdf binary
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary

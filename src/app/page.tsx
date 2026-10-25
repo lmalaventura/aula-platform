@@ -55,7 +55,7 @@ export default function Home() {
               Oltre una cartella condivisa.
             </h2>
             <p className="mt-4 text-sm leading-7 text-slate-200">
-              La direzione di Aula: materiali organizzati, conoscenza
+              La direzione di {site.name}: materiali organizzati, conoscenza
               condivisa e strumenti per comprendere.
             </p>
             <ol className="mt-7 space-y-4 text-sm">

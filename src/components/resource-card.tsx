@@ -24,10 +24,10 @@ export function ResourceCard({ resource, headingLevel = 4, contextLabel }: Resou
       <p className="mt-4 text-sm text-muted">{resource.authors.join(", ")} · A.A. {resource.academicYear}</p>
       <p className="mt-2 text-sm font-medium text-accent">{resource.status}</p>
       <div className="mt-5 flex flex-wrap gap-3">
-        <Link href={`/risorse/${resource.id}`} className="inline-flex min-h-12 items-center rounded-xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-accent" aria-label={`Leggi ${resource.title}`}>
+        <Link href={`/risorse/${resource.id}`} className="inline-flex min-h-12 items-center rounded-xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-accent" aria-label={`Leggi documento: ${resource.title}`}>
           Leggi documento
         </Link>
-        <a href={resource.fileUrl} download className="inline-flex min-h-12 items-center rounded-xl border border-border px-5 py-3 text-sm font-semibold text-accent hover:border-accent" aria-label={`Scarica ${resource.title} in PDF`}>
+        <a href={resource.fileUrl} download className="inline-flex min-h-12 items-center rounded-xl border border-border px-5 py-3 text-sm font-semibold text-accent hover:border-accent" aria-label={`Scarica PDF: ${resource.title}`}>
           Scarica PDF
         </a>
       </div>

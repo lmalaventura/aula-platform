@@ -14,7 +14,6 @@ export function SubjectCard({ subject }: SubjectCardProps) {
   return (
     <Link
       href={`/insegnamenti/${subject.slug}`}
-      aria-labelledby={titleId}
       className="group flex min-w-0 flex-col rounded-2xl border border-border bg-white p-6 hover:border-accent sm:p-8"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
