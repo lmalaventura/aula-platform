@@ -1,0 +1,21 @@
+{
+  "name": "Aula",
+  "description": "Uno spazio condiviso per organizzare materiali universitari e costruire nuovi modi di studiare.",
+  "institution": "Università di Urbino Carlo Bo",
+  "programme": "Informatica e Innovazione Digitale",
+  "disclaimer": "Progetto studentesco indipendente. Non è un servizio ufficiale dell’ateneo.",
+  "subjects": [
+    {
+      "id": "machine-learning",
+      "label": "ML",
+      "title": "Machine Learning",
+      "description": "Uno spazio per raccogliere teoria, esercizi e materiali sul Machine Learning."
+    },
+    {
+      "id": "dispositivi-mobili",
+      "label": "UI",
+      "title": "Programmazione di dispositivi mobili e interfacce utente",
+      "description": "Uno spazio per organizzare appunti, attività di laboratorio e progetti."
+    }
+  ]
+}
