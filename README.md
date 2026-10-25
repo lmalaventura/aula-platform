@@ -1,5 +1,7 @@
 # Aula
 
+**Demo pubblica:** [Apri Aula](https://aula-platform-phi.vercel.app/)
+
 Piattaforma collaborativa di apprendimento universitario, inizialmente dedicata
 alla magistrale in Informatica e Innovazione Digitale dell'Università di Urbino.
 Progetto studentesco indipendente: non è un servizio ufficiale dell'ateneo.
@@ -72,10 +74,15 @@ Ogni aggiornamento dei JSON/PDF richiede una nuova build e pubblicazione.
 
 ## Pubblicazione
 
-La procedura scelta è GitHub + Vercel Hobby, per la demo personale non commerciale.
+La demo è pubblicata su Vercel e collegata a questa repository.
+È consultabile senza un account della piattaforma e senza avviare il progetto in locale.
 La guida [PUBBLICAZIONE.md](docs/PUBBLICAZIONE.md) contiene impostazioni,
-passaggi e prove dell'URL pubblico. L'URL effettivo verrà aggiunto dopo il primo
-deployment verificato: non è ancora registrato in questo snapshot.
+passaggi di manutenzione e prove dell'URL pubblico.
+
+Il 25 ottobre 2026 sono stati completati 17 controlli esterni sul dominio pubblico:
+navigazione, ricerca e filtri, stati vuoti, lettura delle pagine delle risorse,
+download dei due PDF, comportamento responsive e gestione degli indirizzi inesistenti.
+I PDF scaricati sono stati confrontati con gli originali tramite SHA-256.
 
 ## Limiti attuali
 
@@ -93,3 +100,4 @@ ancora essere definite esplicitamente. In questo snapshot non è presente un
 file LICENSE; non viene dichiarata una licenza open source o Creative Commons.
 Le dipendenze mantengono le rispettive licenze e gli appunti mantengono le
 attribuzioni e le indicazioni riportate nei documenti e nei metadati.
+

@@ -49,11 +49,22 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 - Regole LF per i file di testo in .gitattributes.
 - Licenze del codice e dei materiali ancora da definire; nessuna nuova licenza assegnata.
 
-## Pubblicazione
-- Repository GitHub: non ancora verificato.
-- URL pubblico: non ancora verificato.
-- Hosting scelto: Vercel Hobby per la demo personale non commerciale.
-- Prossimo passo: commit, pubblicazione GitHub, importazione Vercel, prova del dominio pubblico.
+## Pubblicazione verificata
+- Repository GitHub: https://github.com/lmalaventura/aula-platform
+- Ramo di produzione: master.
+- URL pubblico: https://aula-platform-phi.vercel.app/
+- Hosting: Vercel; piano previsto per la demo personale non commerciale: Hobby.
+- Codice applicativo verificato: commit d5c6ede89bc3188f610eb328b668e7e6d4e1d52e.
+- Stato Vercel associato al commit su GitHub: Deployment has completed.
+- Verifica esterna del 25 ottobre 2026 senza sessione autenticata: 17 controlli superati.
+- Homepage, catalogo, pagine delle materie e risorse accessibili senza login.
+- Ricerca, filtri combinati, stato vuoto e azzeramento verificati sul sito pubblico.
+- Download di entrambi i PDF verificati mediante confronto SHA-256 con gli originali.
+- Pagine principali: HTTP 200; indirizzi inesistenti provati: HTTP 404.
+- Materiali verificati a 320, 390, 768 e 1440 px e mediante tastiera.
+- Prove della pagina di lettura e del contenuto alternativo; anteprima PDF nativa confermata dall'utente sul proprio browser.
+- MVP iniziale pubblicato e utilizzabile. Aggiornare contenuti e raccogliere riscontri prima di ampliare il perimetro.
 
 ## Funzioni future
 Upload web, autenticazione, approvazioni, strumenti didattici e integrazioni AI.
+
