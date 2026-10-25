@@ -1,7 +1,11 @@
+import Link from "next/link";
+import { SubjectCard } from "@/components/subject-card";
+import { getSubjects } from "@/lib/catalog";
 import { getSiteConfig } from "@/lib/site";
 
 export default function Home() {
   const site = getSiteConfig();
+  const subjects = getSubjects();
 
   return (
     <main id="contenuto" tabIndex={-1} className="flex-1">
@@ -28,13 +32,13 @@ export default function Home() {
               {site.description}
             </p>
 
-            <a
-              href="#insegnamenti"
+            <Link
+              href="/insegnamenti"
               className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-xl bg-emerald-200 px-5 py-3 text-sm font-semibold text-ink hover:bg-emerald-100"
             >
               Esplora gli insegnamenti
-              <span aria-hidden="true">↓</span>
-            </a>
+                <span aria-hidden="true">→</span>
+            </Link>
           </div>
 
           <aside
@@ -97,33 +101,8 @@ export default function Home() {
         </p>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {site.subjects.map((subject) => (
-            <article
-              key={subject.id}
-              className="flex min-w-0 flex-col rounded-2xl border border-border bg-white p-6 sm:p-8"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span
-                  aria-hidden="true"
-                  className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 font-mono text-sm font-semibold text-accent"
-                >
-                  {subject.label}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-muted">
-                  In preparazione
-                </span>
-              </div>
-
-              <h3 className="mt-6 text-xl font-semibold leading-7 tracking-tight">
-                {subject.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-muted">
-                {subject.description}
-              </p>
-              <p className="mt-auto pt-6 text-sm font-medium text-muted">
-                Materiali non ancora disponibili
-              </p>
-            </article>
+          {subjects.map((subject) => (
+            <SubjectCard key={subject.slug} subject={subject} />
           ))}
         </div>
       </section>

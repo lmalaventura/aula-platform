@@ -27,7 +27,7 @@ export function SiteHeader({ name }: SiteHeaderProps) {
           className="flex flex-wrap items-center gap-x-5"
         >
           <Link
-            href="/#insegnamenti"
+            href="/insegnamenti"
             className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent"
           >
             Insegnamenti

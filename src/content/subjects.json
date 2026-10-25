@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "machine-learning",
+    "label": "ML",
+    "title": "Machine Learning",
+    "description": "Uno spazio per raccogliere teoria, esercizi e materiali sul Machine Learning."
+  },
+  {
+    "slug": "dispositivi-mobili",
+    "label": "UI",
+    "title": "Programmazione di dispositivi mobili e interfacce utente",
+    "description": "Uno spazio per organizzare appunti, attività di laboratorio e progetti."
+  }
+]

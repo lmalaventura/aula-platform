@@ -1,0 +1,40 @@
+[
+  {
+    "id": "appunti-machine-learning",
+    "subjectSlug": "machine-learning",
+    "categoryId": "appunti",
+    "title": "Appunti di Machine Learning",
+    "description": "Teoria del Machine Learning, ottimizzazione, regressione e classificazione, con una parte di laboratorio su Python e NumPy.",
+    "authors": [
+      "Leonardo Malaventura"
+    ],
+    "academicYear": "2026–2027",
+    "status": "Appunti non ufficiali, in aggiornamento",
+    "provenance": "Appunti studenteschi forniti dall’autore.",
+    "reviewNote": "Revisione disciplinare non attestata.",
+    "version": null,
+    "updatedAt": null,
+    "fileUrl": "/materials/machine-learning/appunti-machine-learning.pdf",
+    "pageCount": 60,
+    "byteSize": 610842
+  },
+  {
+    "id": "appunti-dispositivi-mobili",
+    "subjectSlug": "dispositivi-mobili",
+    "categoryId": "appunti",
+    "title": "Appunti di Programmazione di dispositivi mobili e interfacce utente",
+    "description": "Piattaforme applicative, ciclo di vita e interfacce utente, con il laboratorio introduttivo di Flutter e Dart nello stesso documento.",
+    "authors": [
+      "Leonardo Malaventura"
+    ],
+    "academicYear": "2026–2027",
+    "status": "Appunti non ufficiali, in aggiornamento",
+    "provenance": "Appunti studenteschi forniti dall’autore.",
+    "reviewNote": "Revisione disciplinare non attestata.",
+    "version": null,
+    "updatedAt": null,
+    "fileUrl": "/materials/dispositivi-mobili/appunti-dispositivi-mobili.pdf",
+    "pageCount": 50,
+    "byteSize": 577392
+  }
+]
