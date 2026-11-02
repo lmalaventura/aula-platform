@@ -1,116 +1,149 @@
 # Pubblicazione: GitHub e Vercel
 
-Procedura preparata il 25 ottobre 2026. L'esito del deployment e gli URL effettivi
-vanno registrati solo dopo la pubblicazione verificata.
+Guida aggiornata il 30 ottobre 2026 per il codice degli strumenti di studio e
+l'area collaboratori. Il primo MVP pubblico è già ospitato su Vercel.
 
-## Scelta dell'hosting
+- Repository: https://github.com/lmalaventura/aula-platform
+- Ramo di produzione: `master`.
+- Dominio stabile: https://aula-platform-phi.vercel.app/
+- Ramo di lavoro osservato sul portatile: `feat/study-generation`.
+- Node.js 24 LTS. Il servizio pubblicato funziona senza il PC dello sviluppatore.
 
-Vercel Hobby è gratuito per progetti personali non commerciali, con limiti di utilizzo.
-Per la demo usare l'URL vercel.app assegnato al progetto; non occorre acquistare un dominio.
-La situazione commerciale e i piani potranno essere rivalutati se cambia l'uso del progetto.
+## 1. Configurazione Vercel
 
-Il repository conserva codice e PDF. Vercel esegue la build e serve il sito online:
-non dipende dal PC Windows acceso. Non servono database, chiavi API o variabili
-ambiente per le funzioni attuali.
+Aprire https://vercel.com/dashboard e il progetto Aula già esistente.
+Non creare un altro progetto Vercel.
 
-## 1. Preparare il commit
+In Settings → Environment Variables aggiungere, per Production e Preview:
 
-Dalla cartella C:\Users\x\Projects\aula-platform, in PowerShell:
+| Nome | Valore |
+| --- | --- |
+| NEXT_PUBLIC_SUPABASE_URL | URL del progetto Supabase, come in .env.local |
+| NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY | Chiave sb_publishable_ del progetto, come in .env.local |
 
-```powershell
-git diff --check
-git status --short
-git add README.md .gitattributes docs src/app/page.tsx src/components/site-header.tsx src/components/subject-card.tsx src/components/resource-card.tsx
-git commit -m "chore: prepare MVP for public deployment"
-```
+Salvare le variabili prima della nuova build. Le modifiche non cambiano i
+vecchi deployment: si applicano ai nuovi. Non aggiungere password del database,
+password collaboratori, service_role o sb_secret_ tra le variabili pubbliche.
+L'incremento di upload non richiede credenziali Cloudflare su Vercel: le
+chiamate AI sono ancora limitate al generatore da terminale.
 
-I controlli sul codice sono documentati nel rapporto allegato all'aggiornamento.
-Se si modifica altro codice oltre al pacchetto verificato, ripetere lint e build.
-
-## 2. Pubblicare il repository con GitHub Desktop
-
-1. Aprire GitHub Desktop ed effettuare l'accesso al proprio account, se necessario.
-2. File → Add local repository → Choose.
-3. Selezionare C:\Users\x\Projects\aula-platform, poi Add repository.
-4. Se compare Publish repository, aprirlo e usare:
-   - Name: aula-platform (oppure un altro nome disponibile).
-   - Description: Piattaforma collaborativa di apprendimento universitario.
-   - Keep this code private: deselezionato per avere una repository pubblica.
-   - Organization: None, per pubblicarla nell'account personale.
-5. Premere Publish repository.
-6. Repository → View on GitHub e controllare codice, README e public/materials.
-
-Se esiste già un remote e compare Push origin, non rimuoverlo automaticamente:
-controllare Repository → View on GitHub e verificare che sia la destinazione desiderata.
-Il nome del ramo esistente può rimanere master. Non serve creare un secondo progetto.
-
-## 3. Importare il progetto su Vercel
-
-1. Aprire https://vercel.com/signup e scegliere l'accesso con GitHub.
-2. Selezionare l'uso personale/Hobby. Non serve attivare Pro o una prova a pagamento.
-3. Aprire https://vercel.com/new e la sezione Import Git Repository.
-4. Se necessario collegare GitHub e concedere accesso alla sola repository aula-platform.
-5. Selezionare aula-platform e premere Import.
-6. Verificare il Framework Preset Next.js e la Root Directory del repository.
-7. Nelle opzioni di build impostare:
+Controllare queste impostazioni già usate per il primo MVP:
 
 | Impostazione | Valore |
 | --- | --- |
-| Framework Preset | Next.js |
-| Root Directory | Radice, dove si trova package.json |
+| Framework | Next.js |
+| Root Directory | Radice del repository |
 | Install Command | npm ci |
 | Build Command | npm run lint && npm run build |
-| Output Directory | Valore predefinito di Next.js, senza override manuale |
-| Environment Variables | Nessuna necessaria per questo MVP |
+| Output Directory | Predefinita di Next.js |
+| Node.js Version | 24.x |
 
-Sulla piattaforma Linux si usano npm e &&. Il suffisso .cmd delle istruzioni
-locali serve a PowerShell e non va riportato nella dashboard.
+Il suffisso `.cmd` serve su Windows, non nei comandi Linux di Vercel.
 
-8. Usare Node.js 24.x. Per verificarlo o selezionarlo, dopo la creazione:
-   progetto → Settings → Build and Deployment → Node.js Version. Se si cambia
-   la versione dopo una prima build, eseguire un nuovo deployment.
-9. Premere Deploy e attendere lo stato Ready. In caso di errore inviare il log
-   prima di cambiare versione del framework o rimuovere controlli.
+## 2. Controllo e commit sul portatile
 
-## 4. Verificare l'accesso pubblico
+Aprire PowerShell nella directory del progetto:
 
-Copiare il dominio di produzione indicato nella sezione Domains del progetto.
-Il nome esatto dipende dalla disponibilità: non si presume che sia aula-platform.vercel.app.
-Non confondere il dominio stabile di produzione con un URL generato per una singola build.
+```powershell
+Set-Location "$env:USERPROFILE\Projects\aula-platform"
+```
 
-Aprirlo in una finestra in incognito, senza sessione Vercel, e dal telefono.
-La navigazione non deve chiedere un account Vercel.
+Applicare la correzione del client browser, poi fermare dev con Ctrl+C per
+eseguire i controlli. Fermarsi al primo errore:
 
-Se il dominio di produzione chiede autenticazione, aprire progetto → Settings →
-Deployment Protection e controllare l'ambito della protezione. Standard Protection
-lascia pubblici i domini di produzione e protegge gli altri URL; All Deployments
-protegge anche la produzione. Usare il dominio di produzione e una configurazione
-che lo lasci pubblico; non occorre rendere pubbliche anche tutte le anteprime.
+```powershell
+npm.cmd run lint
+npm.cmd run build
+git diff --check
+```
 
-Provare homepage, catalogo, materia, ricerca, apertura diretta di una pagina
-interna, PDF e download. Verificare /risorse/non-esiste. Ripetere dopo aver
-fermato npm.cmd run dev e npm.cmd start sul PC: il sito pubblico deve funzionare.
+Il ramo osservato è feat/study-generation, nessun file staged e nessun commit
+locale nuovo rispetto a origin/master. Se nel frattempo lo stato è cambiato,
+eseguire `git status --short` e verificare le nuove modifiche.
 
-Registrare l'URL reale nel README e in PROJECT_STATUS.md solo dopo queste prove.
+Questo checkpoint pubblica il codice; i due JSON generati con domande reali
+restano locali in attesa di revisione. Il programma mostra lo stato vuoto
+esplicito quando non trova raccolte pubblicate. Lo script diagnostico di
+connessione resta anch'esso locale. Preparare i file con:
 
-## 5. Aggiornamenti successivi
+```powershell
+git add -- . ':(exclude)src/content/study-kits/*.json' ':(exclude)scripts/check-ai.mjs'
+git diff --cached --check
+git diff --cached --stat
+git diff --cached --name-only -- .env.local "src/content/study-kits/*.json"
+```
 
-1. Modificare file locali e contenuti.
-2. Eseguire lint/build e le prove pertinenti.
-3. Effettuare commit e Push origin da GitHub Desktop.
-4. Controllare il deployment generato da Vercel.
+L'ultimo comando deve produrre **output vuoto**. Non cancella i JSON o `.env.local`.
+I controlli precedenti hanno confermato che `.env.local` non è tracciato ed è ignorato.
+Se compare uno di questi file nello staging, fermarsi prima del commit.
 
-I push sul ramo di produzione configurato aggiornano il sito di produzione;
-gli altri rami possono generare anteprime. Controllare che il ramo di produzione
-sia quello effettivamente usato dal repository (inizialmente master).
+```powershell
+git commit -m "feat: add study tools and private PDF uploads"
+git push -u origin feat/study-generation
+```
 
-## Fonti ufficiali consultate
+Il push pubblica il ramo di lavoro; non aggiorna ancora master. Se Git richiede
+l'accesso, completare il login GitHub tramite la finestra del browser. Se segnala
+identità autore mancante o push rifiutato, inviare l'errore prima di modificare la
+storia o usare opzioni forzate.
 
-- https://docs.github.com/en/desktop/adding-and-cloning-repositories/adding-an-existing-project-to-github-using-github-desktop?platform=windows
+Dopo il commit possono restare non tracciati i due JSON e check-ai.mjs: è previsto.
+
+## 3. Verifica dell'anteprima
+
+In Vercel → progetto Aula → Deployments individuare il deployment associato a
+feat/study-generation. Attendere Ready e aprire l'URL dell'anteprima. Se richiede
+il login Vercel, usare l'account proprietario del progetto; l'accesso collaboratori
+Aula è distinto da quello di Vercel.
+
+Verificare:
+1. Homepage, insegnamenti, ricerca e apertura dei PDF pubblici.
+2. /contribuisci mostra email/password, non “area non ancora attiva”.
+3. Login con l'account Aula già verificato.
+4. Upload di una copia di prova, persistenza dopo ricaricamento e download.
+5. Uscita e ritorno al modulo di accesso.
+6. Le pagine studio prive di JSON pubblicati mostrano lo stato vuoto previsto.
+
+I caricamenti appartengono allo stesso account Supabase: se locale e anteprima
+usano lo stesso backend, ritrovano gli stessi file. Non caricare dati riservati
+nelle build di rami non fidati: per contributi esterni si configurerà un backend
+Preview separato.
+
+La configurazione Supabase non va ripetuta e la migrazione SQL non va rieseguita.
+Una build fallita richiede il log effettivo, senza cambiare dipendenze alla cieca.
+
+## 4. Promozione in produzione, dopo l'anteprima verificata
+
+Eseguire un comando alla volta e fermarsi al primo errore:
+
+```powershell
+git switch master
+git pull --ff-only origin master
+git merge --ff-only feat/study-generation
+git push origin master
+```
+
+Nessun force push. Se Git non può procedere in fast-forward, esaminare lo stato
+prima di scegliere un'altra strategia di merge.
+
+Attendere Ready per il deployment Production e aprire:
+https://aula-platform-phi.vercel.app/contribuisci
+
+Ripetere login/upload/download/uscita dal dominio stabile, anche dopo aver
+fermato il server locale. La navigazione pubblica di produzione deve essere
+accessibile senza login Vercel; i PDF nell'archivio riservato richiedono invece
+il login Aula. Una finestra incognito senza accesso Aula deve vedere il modulo,
+non i contributi di un altro browser.
+
+Registrare il commit pubblicato e l'esito soltanto dopo questa verifica. Per ora
+il checkpoint di caricamento reale è confermato sul portatile, non sul dominio
+pubblico. Il piano Free di Supabase può sospendere il backend dopo una settimana
+di inattività; il catalogo pubblico statico non interroga quel backend.
+
+## Riferimenti
+
+- https://vercel.com/docs/environment-variables/managing-environment-variables
 - https://vercel.com/docs/git
-- https://vercel.com/docs/plans/hobby
-- https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
-- https://vercel.com/docs/deployment-protection
-
-Le etichette della dashboard possono cambiare: in caso di schermate differenti
-condividere il testo o uno screenshot della schermata interessata.
+- https://nextjs.org/docs/messages/missing-data-scroll-behavior
+- https://react.dev/reference/react/useState
+- docs/CARICAMENTO_WEB.md per configurazione del backend e limiti.

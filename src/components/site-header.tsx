@@ -15,6 +15,7 @@ export function SiteHeader({ name }: SiteHeaderProps) {
         <nav aria-label="Navigazione principale" className="flex max-w-full flex-wrap items-center gap-x-5">
           <Link href="/insegnamenti" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Insegnamenti</Link>
           <Link href="/materiali" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Materiali</Link>
+          <Link href="/contribuisci" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Contribuisci</Link>
           <Link href="/#progetto" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Il progetto</Link>
         </nav>
       </div>

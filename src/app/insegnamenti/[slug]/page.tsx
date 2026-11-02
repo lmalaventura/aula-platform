@@ -58,6 +58,11 @@ export default async function SubjectPage({ params }: SubjectPageProps) {
         <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{subject.title}</h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-slate-200">{subject.description}</p>
       </header>
+      <section aria-labelledby="study-title" className="mt-8 rounded-2xl border border-border bg-white p-6">
+        <h2 id="study-title" className="text-xl font-semibold">Studia e ripassa</h2>
+        <p className="mt-3 leading-7 text-muted">Quiz e flashcard collegati alle fonti, quando disponibili.</p>
+        <Link href={`/insegnamenti/${slug}/studio`} className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-emerald-100 px-5 py-3 text-sm font-semibold text-ink hover:bg-emerald-200">Apri gli strumenti di studio →</Link>
+      </section>
       <section aria-labelledby="materials-title" className="mt-10">
         <h2 id="materials-title" className="text-2xl font-semibold tracking-tight">Materiali di studio</h2>
         {resources.length === 0 ? (

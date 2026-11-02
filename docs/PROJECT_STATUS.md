@@ -7,7 +7,7 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 ## Decisioni
 - Next.js App Router 16.4.3, React 19.3.0, TypeScript e Tailwind CSS.
 - Node.js 24 LTS e npm; conservare package-lock.json.
-- Un'unica applicazione, senza database o autenticazione per il primo MVP.
+- Un'unica applicazione; il primo MVP pubblico è statico. L’incremento di caricamento aggiunge un backend Supabase riservato.
 - Identita e corso di studio in src/content/site.json.
 - Insegnamenti, categorie e risorse nei rispettivi JSON di src/content/.
 - Accesso ai contenuti tramite src/lib/catalog/.
@@ -63,8 +63,114 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 - Pagine principali: HTTP 200; indirizzi inesistenti provati: HTTP 404.
 - Materiali verificati a 320, 390, 768 e 1440 px e mediante tastiera.
 - Prove della pagina di lettura e del contenuto alternativo; anteprima PDF nativa confermata dall'utente sul proprio browser.
-- MVP iniziale pubblicato e utilizzabile. Aggiornare contenuti e raccogliere riscontri prima di ampliare il perimetro.
+- MVP iniziale pubblicato e utilizzabile. Il successivo checkpoint concordato richiede strumenti di studio automatici prima della condivisione ai compagni.
 
-## Funzioni future
-Upload web, autenticazione, approvazioni, strumenti didattici e integrazioni AI.
+## Obiettivo aggiornato — 28 ottobre 2026
+- Caricare le fonti deve portare a strumenti di studio con configurazioni comuni.
+- Studenti e collaboratori non devono scrivere codice, prompt o domande per materia.
+- Consultazione per materia e argomento: appunti, flashcard, quiz, mappe, audio e simulazioni d'esame.
+- Prove passate e resoconti degli appelli saranno fonti distinguibili per provenienza.
+- Nessun addestramento separato per corso: le fonti forniscono il contesto.
+- Manutenzione ridotta, contenuti salvati e aggiornamento delle sole raccolte da rielaborare.
+- Area di caricamento e accesso collaboratori anticipati nella roadmap.
+- Il primo incremento verifica la generazione reale prima di introdurre upload, database e code remote.
 
+## Incremento studio automatico — preparato per verifica sul portatile
+- Collegamento reale a Workers AI confermato dall'utente tramite check-ai.mjs.
+- Generatore unico per tutti i PDF di resources.json, senza domande o prompt per materia.
+- Quattro pagine di contenuto al massimo per PDF, selezionate tra le prime venti con esclusione euristica degli indici.
+- Sei flashcard e quattro quesiti per raccolta; limite intenzionale per la prima prova.
+- Citazioni controllate nel testo estratto; formato, duplicati e riferimenti controllati.
+- Un solo tentativo aggiuntivo su output strutturalmente non valido; nessun retry automatico dopo errori API o di rete.
+- Scrittura atomica e impronte: risultati riutilizzati se aggiornati, precedenti conservati se la nuova generazione fallisce.
+- Pagina /insegnamenti/[slug]/studio, flashcard e quiz con spiegazioni, collegamenti e citazioni.
+- Risultati assenti: stato vuoto esplicito. PDF cambiato: raccolte precedenti escluse dalla nuova build.
+- Nessuna chiamata AI nel browser, durante la build o durante la lettura delle attivita.
+- Credenziali solo in .env.local; nessuna chiave richiesta a Vercel per questo incremento.
+- Estrazione effettiva verificata sui PDF reali: ML pagine 4, 6, 7, 8; dispositivi mobili 4, 5, 6, 7.
+- Generazione reale di quiz/flashcard e correttezza disciplinare ancora da verificare con l'account dell'utente.
+- Procedura temporaneamente da terminale: l'upload web e l'elaborazione remota automatica non sono ancora implementati.
+- Nessun quiz dimostrativo inserito come contenuto reale nel pacchetto.
+- Verifiche nell'ambiente di sviluppo: lint e compilazione con TypeScript riusciti.
+- Quattordici test Node superati, inclusa l'estrazione effettiva dei PDF.
+- Cinque prove del flusso CLI con provider simulato: estrazione senza rete, generazione per entrambe le materie, riuso, rifiuto di output non validi e gestione quota.
+- Diciannove verifiche delle funzioni esistenti superate: ricerca, navigazione, PDF, responsive e tastiera.
+- Undici verifiche della nuova interfaccia superate con raccolte sintetiche di test, non incluse nel pacchetto.
+- Zero violazioni rilevate da axe nei dieci stati della nuova interfaccia esaminati; non equivale a certificazione di accessibilita.
+- Stato vuoto e raccolta obsoleta provati mediante build di produzione.
+- npm audit: zero vulnerabilita note segnalate il 28 ottobre 2026; le versioni delle dipendenze preesistenti non sono cambiate.
+
+## Attivita successive
+- Verificare output reali e qualita didattica prima di pubblicare questo incremento.
+- Collegare caricamento, archivio persistente ed esecuzione remota al generatore comune.
+- Estendere a organizzazione per argomento, mappe, audio e simulazioni d'esame.
+- Validazione disciplinare approfondita, gestione community e moderazione in incrementi successivi.
+
+## Correzione dei riferimenti — 28 ottobre 2026
+- Prima generazione reale: Machine Learning salvato con sei flashcard e quattro domande, confermato dal log dell'utente.
+- Dispositivi mobili rifiutato dopo due risposte per una citazione non corrispondente alla pagina indicata; contenuto rifiutato originale non disponibile per un confronto puntuale.
+- Modifica del protocollo: passaggi preparati dal codice, sourceId scelto dal modello, pagina/citazione recuperate dal codice.
+- Controllo letterale invariato; ID non forniti rifiutati; nessun ripiego o confronto approssimativo.
+- Formato finale e fingerprint v1 compatibili: Machine Learning gia valido viene riutilizzato.
+- Rapporti locali delle risposte rifiutate in .aula/diagnostics/, esclusi da Git e privi di token.
+- Diciotto test Node e compilazione con TypeScript superati nell'ambiente di sviluppo.
+- Prova reale del protocollo corretto su Cloudflare ancora da eseguire sul portatile.
+
+## Revisione dei primi contenuti reali e procedura v2 — 28 ottobre 2026
+- L'utente ha confermato build riuscita e log di lint/diff senza segnalazioni sul portatile.
+- Entrambi i JSON reali ricevuti e verificati contro SHA-256 e testo dei PDF originali.
+- Mobili, quiz 2: alternativa indicata come corretta riduce l'interfaccia utente agli elementi grafici, contraddicendo la fonte che ammette interfacce non grafiche.
+- Mobili: tutte e quattro le domande del quiz ripetono i fronti delle flashcard; alcune citazioni terminano prima della definizione.
+- ML, quiz 2: formula illeggibile copiata dall'estrazione PDF. Presente anche sillabazione tipografica nelle spiegazioni.
+- Correttezza dei riferimenti letterali distinta dalla correttezza e utilita didattica degli output.
+- Istruzioni comuni rafforzate: applicazione dei concetti, distrattori plausibili, coerenza fra alternativa/spiegazione, rispetto dell'ambito delle definizioni.
+- Nuovi controlli deterministici di forma e leggibilita; nessuna dichiarazione di verifica disciplinare automatica.
+- Estratti preferibilmente delimitati da frasi; verificati gli esempi di definizione di processo e interfaccia non grafica nei PDF reali.
+- Versione procedura study-v2: rigenerazione automatica delle due raccolte tramite il comando normale, senza cancellare i file precedenti.
+- Ventidue test Node, lint e build con TypeScript superati nell'ambiente di sviluppo.
+- Cinque prove del flusso con provider simulato: rifiuto di output malformati, conservazione dei campioni originali, aggiornamento v1-v2, riuso e gestione errore API.
+- Nuovi output reali v2 ancora da verificare prima del commit e della pubblicazione.
+
+## Caricamento web riservato — 30 ottobre 2026
+- Checkpoint concordato: completare upload e persistenza prima di aggiungere altri generatori.
+- Supabase Auth, Postgres e Storage privato; SDK MIT 2.118.0 fissato, nessuna CLI obbligatoria.
+- Pagina /contribuisci, account creati dall’amministratore, allowlist non modificabile dai collaboratori.
+- Materia, titolo, autore, conferma diritti e PDF fino a 5 MB; stessi moduli per tutti gli insegnamenti.
+- File e metadati riservati al proprietario abilitato tramite RLS, senza service key nel browser o in Vercel.
+- Prenotazioni recuperabili dopo interruzioni, verifica del salvataggio, download autenticato ed eliminazione confermata.
+- SHA-256 nel browser per deduplicazione per proprietario/materia; firma PDF nel browser, limite/MIME in Storage, verifica remota dei metadati. Non è un’analisi di sicurezza o validazione disciplinare del file.
+- Upload non pubblicati e non inviati all’AI: collegamento remoto al generatore nello step successivo.
+- Catalogo e PDF pubblici esistenti rimangono statici; materie selezionate dal catalogo comune.
+- Configurazione Supabase e prova reale sul portatile confermate dall’utente il 30 ottobre 2026: accesso, upload, persistenza dopo ricaricamento, download e uscita. Credenziali non disponibili nell’ambiente di sviluppo.
+- Piano Free: il backend può essere sospeso dopo una settimana di inattività, riattivabile dal dashboard.
+- Guida operativa: docs/CARICAMENTO_WEB.md, con controlli e configurazione Vercel per il successivo deployment.
+- Verifiche del codice: 10 test Node del caricamento e 22 test dello studio superati; lint e build Next con TypeScript riusciti.
+- Quindici prove SQL superate su PGlite/Postgres con fixture Auth/Storage, incluse separazione proprietari, revoca, ordine di eliminazione e rifiuto di stato modificato dal browser.
+- Dodici prove browser superate con risposte HTTP simulate, incluse persistenza sessione, duplicati, recupero e responsive a 320/390/768/1440 px.
+- Zero violazioni axe negli undici stati configurati esaminati e nello stato senza configurazione; non è una certificazione di accessibilità.
+- npm audit del 30 ottobre 2026: zero vulnerabilità note; nessuna versione di dipendenza preesistente modificata.
+
+## Checkpoint prima della pubblicazione dell’area collaboratori — 30 ottobre 2026
+- L’utente ha confermato i risultati attesi di test/installazione e il funzionamento dell’intero percorso di configurazione e caricamento reale.
+- GitHub ricontrollato: master è ancora al commit 8b0711d49b3a56476f4a718d122b452b61620a18, unico ramo remoto osservato. Gli incrementi studio/upload non sono ancora sul repository pubblico.
+- Stato Git del portatile ricevuto: ramo feat/study-generation sul commit 8b0711d, nessun file staged; .env.local ignorato, due JSON delle attività ancora non tracciati.
+- Da configurare le due variabili pubblicabili Supabase su Vercel e verificare l’area sul dominio pubblico.
+- Le raccolte didattiche v2 reali restano da revisionare; pubblicare il codice dell’area non ne attesta la correttezza.
+- Passo successivo al checkpoint online: parsing remoto dei PDF caricati e collegamento al generatore comune, con risultati persistenti.
+
+## Correzione del client browser — 30 ottobre 2026
+- Log Windows: avvisi Multiple GoTrueClient e attributo data-scroll-behavior mancante.
+- Riproduzione in Next dev: sette avvisi client duplicato e un avviso di scorrimento dopo tre rientri nella pagina; nessun errore JavaScript bloccante.
+- Client inizializzato nell’effetto del componente e riutilizzato tramite cache del browser per URL/chiave pubblicabile, senza cache nel processo server.
+- Rimosso il costruttore SDK dall’inizializzatore useState, che può essere eseguito due volte in Strict Mode.
+- Aggiunto data-scroll-behavior="smooth" al layout, come richiesto da Next per la regola CSS già presente.
+- Verifica successiva in Next dev: quattro rientri nella pagina e Fast Refresh, zero avvisi dei due tipi e zero errori JavaScript; una sola istanza osservata nella cache browser.
+- Staging preparato per escludere i JSON delle attività ancora da revisionare e lo script diagnostico check-ai.mjs; .env.local resta ignorato.
+- Commit, push e deployment dell’incremento ancora da eseguire sul portatile.
+- Procedura Git provata su un repository temporaneo: il codice e il README delle raccolte sono staged, i JSON delle attività, .env.local e check-ai.mjs sono esclusi.
+- Correzione verificata anche con lint, build di produzione e dodici prove browser del caricamento con API simulate; zero violazioni axe negli undici stati esaminati.
+
+## Verifica sul portatile — 2 novembre 2026
+- Lint, build e controllo delle modifiche confermati dall'utente.
+- Correzione degli avvisi Supabase e scorrimento verificata dall'utente.
+- Da verificare l'anteprima Vercel dopo il push del ramo.
