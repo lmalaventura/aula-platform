@@ -10,11 +10,14 @@
     "lint": "eslint",
     "study:generate": "node --env-file-if-exists=.env.local scripts/generate-study.mts",
     "study:test": "node --test scripts/study/study.test.mts",
-    "uploads:test": "node --test scripts/uploads/uploads.test.mts"
+    "uploads:test": "node --test scripts/uploads/uploads.test.mts",
+    "web-study:test": "node --test scripts/study/web-study.test.mts",
+    "check": "npm run lint && npm run study:test && npm run uploads:test && npm run web-study:test && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
     "next": "16.4.3",
+    "pdfjs-dist": "6.4.299",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
@@ -25,7 +28,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
-    "pdfjs-dist": "6.4.299",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

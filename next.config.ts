@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["pdfjs-dist"],
+  outputFileTracingIncludes: {
+    "/api/studio/genera": ["./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"],
+  },
   /* config options here */
   turbopack: {
     rules: {

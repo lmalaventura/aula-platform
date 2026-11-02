@@ -1,5 +1,10 @@
 # Studio automatico — primo incremento
 
+> Questa guida descrive l'incremento iniziale e il relativo perimetro.
+> Il collegamento successivo fra upload e generazione sul server è documentato
+> in [GENERAZIONE_WEB.md](GENERAZIONE_WEB.md).
+
+
 Obiettivo: verificare che una procedura comune generi attivita dalle fonti di
 materie diverse, senza scrivere domande o prompt specifici per ogni materia.
 

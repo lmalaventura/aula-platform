@@ -40,6 +40,7 @@ export function createUploadsRepository(client: SupabaseClient<UploadDatabase>) 
       if (uploaded.error) throw uploaded.error;
       const completed = await client.rpc("aula_complete_upload", { upload_id: data.id });
       if (completed.error) throw completed.error;
+      return { ...data, status: "stored" as const };
     },
     async complete(id: string) {
       const { error } = await client.rpc("aula_complete_upload", { upload_id: id });

@@ -174,3 +174,23 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 - Lint, build e controllo delle modifiche confermati dall'utente.
 - Correzione degli avvisi Supabase e scorrimento verificata dall'utente.
 - Da verificare l'anteprima Vercel dopo il push del ramo.
+
+## Generazione web da upload — 2 novembre 2026
+- L’utente ha confermato il funzionamento dell’anteprima upload. Il commit 303bf5c è stato pubblicato, seguito dalla pulizia 624630d del file accidentale s.
+- Ritmo concordato: incrementi funzionali completi e una verifica dell’utente a fine blocco; evitare checkpoint per ogni dettaglio.
+- Promozione dell’upload in master e nuovo ramo feat/web-study-generation proposti; esecuzione sul portatile non ancora confermata.
+- Nuovo flusso: salvataggio PDF → API autenticata → lavoro sul server dopo la risposta → risultati privati persistenti → interfaccia quiz/flashcard comune.
+- Stessa procedura study-v2 del CLI: quattro pagine selezionate, sei flashcard e quattro quesiti. Nessuna implementazione per materia o nuovo addestramento.
+- Verifica server di firma/dimensione/SHA-256 prima del provider. Autorizzazione e proprietà verificate prima dell’uso della chiave privilegiata.
+- Migrazione 202611020001_web_study.sql: job privati, vista stati, claim e conferma riservati a service_role; cinque nuove elaborazioni per account in 24 ore; riuso senza chiamate AI.
+- after di Next, maxDuration 300; supporto Vercel Fluid verificato nella documentazione. Non è una coda durabile: job interrotti riprovabili dopo sei minuti, senza retry infiniti.
+- Nuova SUPABASE_SECRET_KEY solo sul server; Cloudflare già configurato localmente va configurato anche nelle variabili server di Vercel. Nessun segreto nei pacchetti o nel browser.
+- PDF.js stessa versione, spostato tra le dipendenze applicative; worker incluso nel tracing della funzione.
+- CLI compatibile; il catalogo statico continua a funzionare senza la generazione configurata.
+- Prove nell’ambiente di sviluppo: 39 test Node, 12 verifiche SQL con PGlite/fixture Auth e Storage; server Next e browser reali con risposte remote simulate.
+- La configurazione e la prima generazione su Supabase/Cloudflare dell’utente sono da verificare; nessuna chiamata reale al modello eseguita qui.
+- Guida completa: docs/GENERAZIONE_WEB.md.
+- Dieci prove HTTP/browser dell’intero flusso superate, sette stati axe senza violazioni; controlli dei marcatori di segreti nell’HTML e nel JavaScript pubblico superati.
+- Tracciamento della funzione verificato: worker PDF incluso, dipendenze tracciate circa 5,22 MB; nessuna versione di dipendenza preesistente cambiata.
+- npm audit del 2 novembre 2026: 16 vulnerabilità note segnalate.
+- Le 16 segnalazioni moderate dell’audit completo sono propagate da minimatch/ESLint nella catena di sviluppo preesistente; audit runtime zero. Revisione dedicata della catena lint da pianificare, senza downgrade automatici.

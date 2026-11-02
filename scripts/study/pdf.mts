@@ -24,6 +24,10 @@ export function selectSourcePages(pages: SourcePage[]): SourcePage[] {
 
 export async function extractSourcePages(filePath: string) {
   const bytes = await readFile(filePath);
+  return extractSourcePagesFromBytes(bytes);
+}
+
+export async function extractSourcePagesFromBytes(bytes: Uint8Array) {
   const sourceSha256 = createHash("sha256").update(bytes).digest("hex");
   const task = getDocument({
     data: new Uint8Array(bytes),

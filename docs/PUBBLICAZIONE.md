@@ -1,5 +1,7 @@
 # Pubblicazione: GitHub e Vercel
 
+> Per il successivo incremento di generazione web, usare [GENERAZIONE_WEB.md](GENERAZIONE_WEB.md), incluse le tre nuove variabili server.
+
 Guida aggiornata il 30 ottobre 2026 per il codice degli strumenti di studio e
 l'area collaboratori. Il primo MVP pubblico è già ospitato su Vercel.
 

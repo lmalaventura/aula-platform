@@ -5,14 +5,17 @@ import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { getBrowserUploadClient } from "@/lib/uploads/browser-client";
 import { createUploadsRepository, uploadError } from "@/lib/uploads/repository";
 import type { Upload, UploadDatabase } from "@/lib/uploads/types";
+import { createWebStudyRepository, WebStudyClientError } from "@/lib/study/web-client";
+import { jobExpired, studyErrorMessage, type StudyJobSummary } from "@/lib/study/web-types";
+import { UploadedStudySession } from "./uploaded-study-session";
 
 type SubjectOption = { slug: string; title: string };
 const field = "mt-2 block min-h-12 w-full rounded-xl border border-border bg-white px-3 py-2 text-base";
 const button = "inline-flex min-h-12 items-center justify-center rounded-xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-accent disabled:cursor-wait disabled:opacity-60";
 const secondary = "inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-4 py-3 text-sm font-medium text-ink hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60";
 
-export function ContributorPanel({ config, subjects }: {
-  config: { url: string; key: string }; subjects: SubjectOption[];
+export function ContributorPanel({ config, subjects, studyEnabled }: {
+  config: { url: string; key: string }; subjects: SubjectOption[]; studyEnabled: boolean;
 }) {
   // La sessione serve all'area interattiva; i dati privati non passano nella pagina statica.
   // RLS verifica il token sul servizio remoto per ogni lettura/scrittura.
@@ -68,7 +71,7 @@ export function ContributorPanel({ config, subjects }: {
             <p className="min-w-0 break-all text-sm text-muted">Accesso come <span className="font-medium text-ink">{session.user.email}</span></p>
             <button type="button" onClick={logout} disabled={busy} className={secondary}>{busy ? "Uscita…" : "Esci"}</button>
           </div>
-          <ContributorWorkspace key={session.user.id} client={client} subjects={subjects} />
+          <ContributorWorkspace key={session.user.id} client={client} subjects={subjects} studyEnabled={studyEnabled} />
         </>
       ) : (
         <form onSubmit={login} className="max-w-lg rounded-2xl border border-border bg-white p-6 sm:p-8" aria-busy={busy}>
@@ -86,14 +89,19 @@ export function ContributorPanel({ config, subjects }: {
   );
 }
 
-function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<UploadDatabase>; subjects: SubjectOption[] }) {
+function ContributorWorkspace({ client, subjects, studyEnabled }: { client: SupabaseClient<UploadDatabase>; subjects: SubjectOption[]; studyEnabled: boolean }) {
   const repository = useMemo(() => createUploadsRepository(client), [client]);
+  const studies = useMemo(() => createWebStudyRepository(client), [client]);
+  const [jobs, setJobs] = useState<Record<string, StudyJobSummary>>({});
+  const [openStudy, setOpenStudy] = useState<string | null>(null);
+  const [clock, setClock] = useState(() => Date.now());
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [items, setItems] = useState<Upload[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [toDelete, setToDelete] = useState<string | null>(null);
+  const hasRunningJob = Object.values(jobs).some((job) => job.status === "processing" && !jobExpired(job, clock));
 
   useEffect(() => {
     let active = true;
@@ -102,22 +110,46 @@ function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<Upl
         const enabled = await repository.canContribute();
         const rows = enabled ? await repository.list() : [];
         if (active) { setAllowed(enabled); setItems(rows); }
-      } catch (err) { if (active) setError(uploadError(err)); }
+        if (enabled && studyEnabled) {
+          const collected = await studies.list(rows.map((r) => r.id));
+          if (active) setJobs(Object.fromEntries(collected.map((j) => [j.upload_id, j])));
+        }
+      } catch (err) { if (active) setError(err instanceof WebStudyClientError ? err.message : uploadError(err)); }
     }
     void load();
     return () => { active = false; };
-  }, [repository]);
+  }, [repository, studies, studyEnabled]);
+
+  useEffect(() => {
+    if (!studyEnabled || !allowed || !hasRunningJob) return;
+    let active = true, inFlight = false;
+    const timer = window.setInterval(async () => {
+      if (document.visibilityState === "hidden" || inFlight) return;
+      inFlight = true;
+      try {
+        const collected = await studies.list(items.map((r) => r.id));
+        if (active) setJobs(Object.fromEntries(collected.map((j) => [j.upload_id, j])));
+      } catch { if (active) setError("Impossibile aggiornare le elaborazioni. Riprova con Aggiorna elenco."); }
+      finally { inFlight = false; if (active) setClock(Date.now()); }
+    }, 4000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [studies, items, allowed, studyEnabled, hasRunningJob]);
 
   async function refresh() {
     const enabled = await repository.canContribute();
     setAllowed(enabled);
-    setItems(enabled ? await repository.list() : []);
+    const rows = enabled ? await repository.list() : [];
+    setItems(rows);
+    if (enabled && studyEnabled) {
+      const collected = await studies.list(rows.map((r) => r.id));
+      setJobs(Object.fromEntries(collected.map((j) => [j.upload_id, j]))); setClock(Date.now());
+    }
   }
 
   async function run(action: () => Promise<void>, success: string) {
     setBusy(true); setError(""); setNotice("");
     try { await action(); setNotice(success); }
-    catch (err) { setError(uploadError(err)); }
+    catch (err) { setError(err instanceof WebStudyClientError ? err.message : uploadError(err)); }
     finally {
       try { await refresh(); } catch { setError((previous) => previous || "Impossibile aggiornare l’elenco. Riprova con Aggiorna elenco."); }
       setBusy(false);
@@ -131,8 +163,12 @@ function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<Upl
     const file = data.get("pdf");
     if (!(file instanceof File)) { setError("Scegli un file PDF."); return; }
     await run(async () => {
-      await repository.add({ subjectSlug: String(data.get("subject")), title: String(data.get("title")), authorName: String(data.get("author")), rightsConfirmed: data.get("rights") === "on" }, file, subjects.map((s) => s.slug));
+      const saved = await repository.add({ subjectSlug: String(data.get("subject")), title: String(data.get("title")), authorName: String(data.get("author")), rightsConfirmed: data.get("rights") === "on" }, file, subjects.map((s) => s.slug));
       form.reset();
+      if (studyEnabled) {
+        try { await studies.start(saved.id); }
+        catch (err) { setError(`PDF salvato. ${err instanceof WebStudyClientError ? err.message : "Generazione non avviata. Puoi richiederla dall’elenco."}`); }
+      }
     }, "PDF salvato nell’archivio riservato. Puoi ritrovarlo nell’elenco e scaricarlo.");
   }
 
@@ -160,6 +196,8 @@ function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<Upl
           <form onSubmit={submit} className="min-w-0 rounded-2xl border border-border bg-white p-6 sm:p-8">
             <h2 className="text-xl font-semibold">Carica i tuoi appunti</h2>
             <p id="upload-help" className="mt-3 text-sm leading-6 text-muted">Un PDF per volta, massimo 5 MB. Sono accettati anche appunti incompleti. Non chiudere la pagina durante l’invio.</p>
+            <p className="mt-3 text-sm leading-6 text-muted">{studyEnabled ? "Dopo il salvataggio parte la generazione sul server: fino a quattro pagine selezionate, sei flashcard e quattro quesiti. Massimo cinque nuove elaborazioni in 24 ore per account; le raccolte pronte vengono riutilizzate." : "La generazione automatica non è ancora attiva su questa versione del sito. Puoi comunque salvare i tuoi PDF."}</p>
+            {studyEnabled && <p className="mt-3 text-sm leading-6 text-muted">Per preparare le attività, le pagine testuali selezionate vengono inviate al servizio AI Cloudflare. I risultati restano nel tuo archivio privato.</p>}
             <fieldset disabled={busy} aria-describedby="upload-help" className="mt-6 space-y-5">
               <legend className="sr-only">Dati del contributo</legend>
               <div className="text-sm font-medium"><label htmlFor="upload-subject">Insegnamento</label><select id="upload-subject" name="subject" className={field} required defaultValue=""><option value="" disabled>Scegli l’insegnamento</option>{subjects.map((s) => <option key={s.slug} value={s.slug}>{s.title}</option>)}</select></div>
@@ -175,16 +213,27 @@ function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<Upl
             <p className="mt-2 text-sm leading-6 text-muted">Gli ultimi 100 contributi del tuo account. Non sono ancora visibili nel catalogo pubblico.</p>
             {items.length === 0 ? <p className="mt-5 rounded-2xl border border-border bg-white p-6">Non hai ancora caricato materiali.</p> : (
               <ul className="mt-5 space-y-4">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const job = jobs[item.id];
+                  const expired = job ? jobExpired(job, clock) : false;
+                  return (
                   <li key={item.id} className="min-w-0 rounded-2xl border border-border bg-white p-5">
                     <p className="text-xs font-semibold uppercase tracking-wide text-accent">{item.status === "stored" ? "Salvato · privato" : "Caricamento incompleto"}</p>
                     <h3 className="mt-2 break-words text-lg font-semibold">{item.title}</h3>
                     <p className="mt-2 break-words text-sm leading-6 text-muted">{subjects.find((s) => s.slug === item.subject_slug)?.title ?? item.subject_slug} · {item.author_name}</p>
                     <p className="mt-1 break-all text-sm leading-6 text-muted">{item.original_name} · {new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 }).format(item.byte_size / 1024 / 1024)} MB</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {item.status === "stored" ? <button type="button" disabled={busy} className={secondary} onClick={() => download(item)}>Scarica PDF</button> : <button type="button" disabled={busy} className={secondary} onClick={() => run(() => repository.complete(item.id), "Salvataggio verificato.")}>Verifica salvataggio</button>}
+                      {item.status === "stored" ? <button type="button" disabled={busy} className={secondary} onClick={() => download(item)}>Scarica PDF</button> : <button type="button" disabled={busy} className={secondary} onClick={() => run(async () => { await repository.complete(item.id); if (studyEnabled) await studies.start(item.id); }, "Salvataggio verificato.")}>Verifica salvataggio</button>}
+                      {item.status === "stored" && studyEnabled && (job?.status === "ready" ? (
+                        <button type="button" disabled={busy} aria-expanded={openStudy === item.id} className={secondary} onClick={() => setOpenStudy(openStudy === item.id ? null : item.id)}>{openStudy === item.id ? "Chiudi strumenti" : "Apri strumenti di studio"}</button>
+                      ) : (
+                        <button type="button" disabled={busy || (job?.status === "processing" && !expired)} className={secondary} onClick={() => run(() => studies.start(item.id).then(() => {}), "Elaborazione richiesta. I risultati saranno salvati automaticamente.")}>{job?.status === "processing" && !expired ? "Generazione in corso…" : job ? "Riprova generazione" : "Genera strumenti di studio"}</button>
+                      ))}
                       <button type="button" disabled={busy} className={secondary} onClick={() => setToDelete(item.id)}>Elimina</button>
                     </div>
+                    {studyEnabled && job?.status === "processing" && !expired && <p role="status" className="mt-3 text-sm leading-6 text-muted">Elaborazione sul server. Puoi cambiare pagina e tornare qui: i risultati restano nel tuo archivio.</p>}
+                    {studyEnabled && (job?.status === "failed" || expired) && <p className="mt-3 text-sm leading-6 text-red-900">{studyErrorMessage(expired ? "expired" : job?.error_code ?? null)}</p>}
+                    {job?.status === "ready" && openStudy === item.id && <UploadedStudySession key={job.id} client={client} upload={item} jobId={job.id} />}
                     {toDelete === item.id && (
                       <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
                         <p className="text-sm leading-6 text-red-900">Eliminare “{item.title}” dall’archivio? Questa operazione rimuove anche il PDF.</p>
@@ -195,7 +244,8 @@ function ContributorWorkspace({ client, subjects }: { client: SupabaseClient<Upl
                       </div>
                     )}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </section>

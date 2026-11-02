@@ -1,5 +1,10 @@
 # Caricamento web — primo incremento
 
+> Questa guida descrive l'incremento iniziale e il relativo perimetro.
+> Il collegamento successivo fra upload e generazione sul server è documentato
+> in [GENERAZIONE_WEB.md](GENERAZIONE_WEB.md).
+
+
 Obiettivo verificabile: accedere dal sito, scegliere un PDF, salvarlo in un archivio
 remoto privato e ritrovarlo dopo aver chiuso il browser. Nessuna configurazione
 specifica per Machine Learning o dispositivi mobili nel codice del caricamento.
