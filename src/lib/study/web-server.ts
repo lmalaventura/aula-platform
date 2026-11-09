@@ -11,10 +11,25 @@ function configuration() {
   const secret = process.env.SUPABASE_SECRET_KEY?.trim();
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID?.trim();
   const token = process.env.CLOUDFLARE_API_TOKEN?.trim();
-  if (!publicConfig || !secret?.startsWith("sb_secret_") || !accountId || !/^[a-f0-9]{32}$/i.test(accountId) || !token) return null;
+  if (!publicConfig || !secret?.startsWith("sb_secret_") || !accountId || !/^[a-f0-9]{32}$/i.test(accountId) || !token) {
+    // Solo nomi e motivi prestabiliti: nessun valore, prefisso reale o token nei log.
+    const problems: string[] = [];
+    if (!publicConfig) problems.push("NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: configurazione pubblica assente o non valida");
+    if (!secret) problems.push("SUPABASE_SECRET_KEY: assente o vuota");
+    else if (!secret.startsWith("sb_secret_")) problems.push("SUPABASE_SECRET_KEY: formato non valido; richiesto il prefisso sb_secret_");
+    if (!accountId) problems.push("CLOUDFLARE_ACCOUNT_ID: assente o vuoto");
+    else if (!/^[a-f0-9]{32}$/i.test(accountId)) problems.push("CLOUDFLARE_ACCOUNT_ID: formato non valido; richiesti 32 caratteri esadecimali");
+    if (!token) problems.push("CLOUDFLARE_API_TOKEN: assente o vuoto");
+    console.warn("[AULA_STUDIO_CONFIG]", problems.join("; "));
+    return null;
+  }
   return { ...publicConfig, secret, accountId, token };
 }
-export function isWebStudyConfigured() { return Boolean(configuration()); }
+export function isWebStudyConfigured() {
+  const configured = Boolean(configuration());
+  if (configured) console.info("[AULA_STUDIO_CONFIG] OK");
+  return configured;
+}
 
 class HttpError extends Error {
   constructor(public status: number, public code: string) { super(code); }

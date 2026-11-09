@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { ContributorPanel } from "@/components/contributor-panel";
 import { getSubjects } from "@/lib/catalog";
 import { getPublicUploadConfig } from "@/lib/uploads/validation";
@@ -6,7 +7,9 @@ import { isWebStudyConfigured } from "@/lib/study/web-server";
 
 export const metadata: Metadata = { title: "Contribuisci | Aula", robots: { index: false, follow: false } };
 
-export default function ContributePage() {
+export default async function ContributePage() {
+  // Valutare la disponibilità del server alla richiesta, non durante la build.
+  await connection();
   const config = getPublicUploadConfig(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
   return (
     <main id="contenuto" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
