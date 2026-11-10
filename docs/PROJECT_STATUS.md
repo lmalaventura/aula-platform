@@ -316,3 +316,168 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 - Preparazione completa delle banche e verifica didattica ancora da completare.
 - Decisione: salvare il blocco corrente e continuare le funzionalita indipendenti dal provider.
 - Prossimo blocco: basi riutilizzabili per mappe concettuali e podcast.
+
+## Mappe e podcast: lettori e redazione locale
+
+- Checkpoint precedente verificato sul remoto: feat/shared-study, d069225.
+  Nuovo lavoro isolato su feat/learning-tools senza modificare il checkpoint.
+- Lettori riutilizzabili per tutte le materie: grafo/elenco di concetti,
+  relazioni e fonti; audio con velocita, capitoli, trascrizione e download.
+- Redazione con moduli per creare/modificare senza codice e importazione JSON
+  per la futura pipeline generativa. Anteprima, bozza, attestazione di revisione,
+  pubblicazione e ritiro sono implementati. La pubblicazione online rimane il
+  normale commit/push/deployment, senza CMS o nuovi servizi.
+- Demo tecniche solo locali, distinte dai materiali didattici. Audio di prova
+  di tre secondi, senza lezione parlata. La pubblicazione di demo e rifiutata.
+  La generazione automatica di mappe e voce non e implementata in questo blocco.
+- Strumenti approvati in src/content/learning-tools/{materia}; audio pubblicati
+  in public/media/study/{materia}. Bozze/audio locali in .aula/editor-tools.
+  MP3/WAV fino a 10 MB; validazione del formato e impronta, non antivirus.
+- Impronta del PDF e digest della bozza controllati in pubblicazione. Fonte
+  diversa: strumenti precedenti nascosti finche non vengono riallineati.
+  Modifiche non approvate non sovrascrivono la versione pubblicata.
+- Cambio PC: gli strumenti pubblicati si riaprono anche senza cache locale;
+  il ritiro conserva una bozza e l'audio. Le bozze non pubblicate rimangono da
+  trasferire privatamente. Scritture concorrenti nella stessa materia rifiutate
+  nello stesso processo editoriale, senza blocchi persistenti da ripulire.
+- API /api/redazione/strumenti solo in sviluppo, stessi controlli Host/Origin/
+  token; limite del corpo, no-store e protezione iframe. Audio privati ascoltati
+  tramite risposta autenticata e blob locale, senza token negli URL.
+- Verifiche eseguite: 66 test Node, lint, TypeScript e build riusciti. Tredici
+  scenari browser/HTTP su Next reale, riproduzione WAV reale, zero chiamate a
+  servizi remoti e zero errori JavaScript. Quattordici stati axe senza violazioni
+  rilevate, incluse viste a 320/390/768/1440 px; non una certificazione.
+- Fixture QA rimosse dai file pubblicati e dal pacchetto. Nessun nuovo dato
+  didattico presentato come revisionato, nessuna dipendenza applicativa aggiunta.
+- Prova sul portatile e commit/push del nuovo incremento ancora da eseguire.
+  Guida completa: docs/MAPPE_E_PODCAST.md.
+
+## Allenamento in modalita esame e ripresa delle sessioni
+
+- L'utente conferma il funzionamento del blocco mappe/podcast sul portatile.
+  Si continua sullo stesso ramo feat/learning-tools; nessun nuovo commit o
+  push di quel blocco viene dichiarato senza averne ricevuto l'esito.
+- Nuovo lettore delle domande gia approvate: scelta di quantita e durata,
+  macroargomento, navigazione, domande non risposte e correzione alla fine.
+  Non replica automaticamente stile, difficolta o regole del docente.
+- Sessione, risposte, posizione e scadenza in localStorage. Timer basato sulla
+  scadenza assoluta, ripresa dopo reload, nessun riavvio del tempo. Le risposte
+  tardive non entrano nel risultato; chiusura idempotente senza doppia cronologia.
+- Risultato per argomento, distinte corrette/errate/non risposte, fonti e lista
+  di ripasso mirato. Ultimo risultato e dieci riepiloghi recenti per banca.
+- I dati rimangono nel browser, separati per origine, materia e versione delle
+  domande; non seguono Git o gli account. Storage bloccato/pieno gestito con
+  avviso e prosecuzione in memoria. Dati corrotti o incompatibili rifiutati.
+- Quiz rapido e flashcard precedenti mantenuti. Demo tecnica solo locale in
+  redazione, con otto domande sull'interfaccia e dati separati dalle materie.
+  Navigazione interna della redazione per raggiungere rapidamente i tre blocchi.
+- Nessuna richiesta AI, nuova dipendenza applicativa, migrazione o variabile.
+  Guida: docs/ALLENAMENTO.md. Generazione e banche reali ancora da completare.
+- Verifiche: 76 test Node, lint, TypeScript e build riusciti. Dodici scenari
+  browser/HTTP su Next reale, zero errori JavaScript rilevati, tredici stati axe
+  senza violazioni rilevate. Provati ripresa, timer scaduto alla riapertura,
+  ripasso degli errori, storage disabilitato, fonte e versione delle domande,
+  responsive 320/390/768/1440 px e funzionamento pubblico in produzione.
+- La banca sintetica usata nelle prove e stata rimossa e non viene consegnata
+  come contenuto didattico. La demo non pubblica file o collegamenti a PDF fittizi.
+
+## Interfaccia editoriale: quaderno e compagno di studio
+
+- Direzione scelta dall'utente: struttura e titoli del Quaderno editoriale,
+  con dettagli illustrati informali e un piccolo personaggio di carta.
+- Homepage con accesso alle materie e ricerca GET verso /materiali?q=...;
+  parametro iniziale limitato, metadati soltanto, niente ricerca nel testo PDF.
+- Materia con fonte principale in evidenza e strumenti disponibili; lettura
+  PDF compatta, provenienza espandibile e passaggio al ripasso quando presente.
+- Navigazione semplificata, pagina corrente, contributo in dialogo, progetto
+  nel footer. Copertura parziale delle banche visibile prima delle attivita.
+- Font locali di sistema (Georgia per titoli), illustrazioni decorative in
+  public/brand tramite next/image. Nessun nuovo servizio o dipendenza.
+- npm run check riuscito: 76 test Node, lint, TypeScript e build. La ricerca
+  rende /materiali dinamica; home, materie e risorse restano prerenderizzate.
+- Anteprima browser gestita non avviabile: opzioni CLI Vite incompatibili con
+  Next. Non alterato il comando dev per compensare l'ambiente. Controllo
+  visivo, responsive e accessibilita della nuova grafica da completare sul
+  portatile; non vengono ereditati come prove i controlli della vecchia UI.
+- Nessuna nuova banca o lezione generata. Quota Cloudflare, contenuti reali e
+  automazione di mappe/voce rimangono lavori separati.
+- Pacchetto cumulativo dal checkpoint d069225, comprese basi mappe/podcast e
+  allenamento. Prossimo passo: prova locale, feedback grafico e checkpoint Git.
+- Istruzioni: docs/INTERFACCIA.md; prompt decorativi: public/brand/README.md.
+
+## Quaderno notturno e mascotte come ingresso agli strumenti
+
+- L'utente ha provato l'interfaccia v1 e approvato un tema scuro caldo,
+  homepage centrata, ricerca per materia con suggerimenti, contributo visibile,
+  rimozione di Materiali dal menu e del link Il progetto dal footer.
+- Implementati campo password con mostra/nascondi, suggerimenti da tastiera,
+  ricerca con q nel catalogo, indicatori di disponibilita derivati dai contenuti.
+- Mascotte riutilizzabile in pose appesa, cuffie e guida delle mappe. Vignetta
+  cliccabile nella materia; selettore comune con accessi distinti a Quiz,
+  Flashcard, Allenamento, Mappe e Podcast quando pubblicati.
+- Cornice condivisa e PageSurface con entrata di 180 ms; nessun blocco
+  artificiale della navigazione, movimenti condizionati a reduced motion.
+- Reader senza selettore per una sola mappa/episodio. Allenamento con dettagli
+  estesi espandibili. Demo del nuovo selettore locale nel blocco Allenamento.
+- Verifica finale: 85 test Node, lint, TypeScript e build riusciti.
+- Browser su componenti reali e CSS compilato in QA separato: ricerca,
+  password, dialogo, selezione, quiz/card, allenamento, mappa e audio provati.
+  Homepage/suggerimenti/allenamento osservati a 320 px senza overflow.
+- Limite esplicito: adattatori Next sostituiti nel QA per incompatibilita del
+  preview gestito con la CLI Next; App Router, immagini ottimizzate e accesso/
+  upload reali richiedono prova sul portatile. Nessuna falsa verifica remota.
+- Nessun nuovo contenuto didattico pubblicato. Generazione di mappe, voce e
+  scene narrate sincronizzate rimane da integrare; chatbot eventuale futuro.
+- Pacchetto cumulativo aula-interfaccia-v2.zip. Prossimo checkpoint:
+  prova locale, feedback e salvataggio Git dei blocchi prima della pubblicazione.
+- Guida corrente: docs/INTERFACCIA.md. Nessuna nuova dipendenza applicativa.
+
+## Mascotte articolata: ingresso e selettore v3
+
+- Correzione richiesta dall’utente: una scena interattiva, non il solo cambio
+  di PNG. Password mostra/nascondi confermata funzionante dall’utente.
+- Ingresso grande e cliccabile nella materia; saluto ed espressione felice con
+  hover/focus. Zaino che si apre, oggetti illustrati e pulsanti reali.
+- Personaggio SVG con arti, viso e accessori separati; piccoli passi e gesto
+  con cuffie, occhiali/bacchetta, fogli e carte secondo lo strumento.
+- Nessuna dipendenza nuova. Nessun ritardo imposto alle interazioni; movimenti
+  finiti soltanto se prefers-reduced-motion consente animazioni.
+- Demo locale dall’ingresso in /redazione; contenuti tecnici separati dalle
+  banche delle materie. Nessuna nuova generazione o pubblicazione didattica.
+- npm run check: 85 test, lint e build riusciti; ripetuti lint e build dopo
+  ritocchi a contrasto, frecce e focus, riusciti. git diff --check pulito.
+- QA browser su componenti reali: ingresso da tastiera, scelta e ritorno,
+  flashcard/rivelazione, quiz e allenamento, mappa e audio. Menu e quiz a
+  320 px senza overflow nei casi osservati. Restano i limiti del QA v2 per
+  adattatori Next e integrazioni remote; prova sul portatile ancora necessaria.
+- Pacchetto cumulativo aula-interfaccia-v3.zip dal commit d069225. Nessun push
+  o deploy effettuato: prossimo passo applicazione locale e feedback.
+- La narrazione video sincronizzata è ancora da implementare; il podcast
+  disponibile oggi resta un lettore audio con trascrizione e capitoli.
+
+## Interfaccia v4 e lettura interna dei PDF
+
+- Feedback dell’utente applicato: archivio di fascicoli, titolo sans serif,
+  illustrazione di sfondo nella home, microinterazioni e dialogo animato.
+- Ripasso compatto nella materia: mascotte più in alto, primo blocco su mobile.
+- Sequenza zaino più articolata: avvicinamento, presa, apertura, estrazione di
+  quaderni, ingressi sfalsati. Quiz con libro apribile; allenamento con ruolo
+  docente, mappe con strumenti da disegno. Attività utilizzabili subito.
+- Lettore PDF.js integrato: pagina, zoom, testo, indice dai segnalibri, rimandi
+  per pagina, download originale. Schermo intero nella stessa pagina con
+  fallback se l’API nativa non è concessa. Nessuna riscrittura del PDF.
+- Nessuna nuova dipendenza o chiave: predev/prebuild generano gli asset PDF.js
+  locali dalla versione installata; Git ed ESLint ignorano solo questa copia
+  di terze parti. Script e configurazione sono consegnati.
+- npm run check completo riuscito: 89 test, lint, TypeScript e build.
+- QA browser dei componenti con due PDF reali: testo, impaginazione, zoom,
+  indice, salto di pagina e hash; fallback esteso ed Esc. API nativa non
+  concessa nel QA, quindi da provare su Windows. Download PDMIU identico
+  all’originale per dimensione e SHA-256. Reader a 320 px senza overflow
+  globale, zoom nel piano di lettura; errore e riprova su fixture mancante.
+- App Router, autenticazione e upload reali restano da verificare nel progetto
+  originale sul portatile, dato che il QA sostituisce gli adattatori Next.
+- Nessuna chiamata AI, nuova banca o lezione generata. Video narrato ancora
+  futuro. Nessun push o deploy effettuato. Pacchetto aula-interfaccia-v4.zip.
+- Prossimo passo: applicare il pacchetto, provare lettore e grafica; poi un
+  checkpoint Git unico dopo il feedback, mantenendo bozze e segreti locali.

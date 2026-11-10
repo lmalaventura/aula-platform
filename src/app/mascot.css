@@ -1,0 +1,613 @@
+/* Personaggio articolato. La posa statica resta completa anche senza animazioni. */
+.animated-mascot {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+}
+.animated-mascot > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mascot-happy-eyes,
+.mascot-hello-rays {
+  opacity: 0;
+}
+.mascot-arm,
+.mascot-leg {
+  transform-origin: 0 0;
+  transform-box: view-box;
+}
+.mascot-torso {
+  transform-origin: 155px 180px;
+}
+.mascot-arm-right {
+  transform: rotate(28deg);
+}
+.animated-mascot[data-pose="menu"] .mascot-arm-right {
+  transform: rotate(-25deg);
+}
+.animated-mascot[data-pose="map"] .mascot-arm-right {
+  transform: rotate(-18deg);
+}
+.animated-mascot[data-pose="podcast"] .mascot-arm-right {
+  transform: rotate(-105deg);
+}
+.mascot-bag-flap {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+.animated-mascot[data-pose="menu"] .mascot-bag-flap {
+  transform: rotate(-8deg) scaleY(-0.7);
+}
+.mascot-flying-note {
+  opacity: 0;
+}
+.mascot-entrance {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 330px;
+  margin: 1.5rem auto 0;
+  padding: 1rem 1rem 0;
+  border: 1px dashed var(--control-border);
+  border-radius: 1.6rem;
+  background: var(--soft);
+  color: var(--foreground);
+  text-align: center;
+  isolation: isolate;
+  cursor: pointer;
+}
+.mascot-entrance:hover,
+.mascot-entrance:focus-visible {
+  background: var(--soft-hover);
+}
+.mascot-entrance .animated-mascot {
+  width: 230px;
+  max-width: 100%;
+  z-index: 1;
+  margin-top: 0.1rem;
+}
+.entrance-balloon {
+  position: relative;
+  padding: 0.7rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  font: 1.35rem/1.3 var(--editorial);
+  z-index: 2;
+}
+.entrance-hint {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--accent);
+  font: 500 0.75rem/1.6 var(--font-sans);
+}
+.entrance-ground {
+  position: absolute;
+  bottom: 13px;
+  width: 68%;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--background);
+  opacity: 0.5;
+}
+.mascot-entrance:is(:hover, :focus-visible) .mascot-eyes {
+  opacity: 0;
+}
+.mascot-entrance:is(:hover, :focus-visible) .mascot-happy-eyes,
+.mascot-entrance:is(:hover, :focus-visible) .mascot-hello-rays {
+  opacity: 1;
+}
+.study-selector {
+  display: grid;
+  grid-template-columns: minmax(145px, 210px) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.6rem;
+}
+.selector-host {
+  position: relative;
+  align-self: start;
+  padding-top: 2rem;
+}
+.scene-caption {
+  margin: 0.3rem auto 0;
+  color: var(--muted);
+  font: italic 0.9rem/1.6 var(--editorial);
+  text-align: center;
+}
+.selector-worktop {
+  min-width: 0;
+}
+.selector-worktop .speech-bubble {
+  margin-bottom: 1.3rem;
+}
+.tool-shelf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.tool-tile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.1rem 0.7rem;
+  border: 1px solid var(--control-border);
+  border-radius: 1.2rem;
+  background: var(--surface);
+  color: var(--foreground);
+  text-align: center;
+  cursor: pointer;
+}
+.tool-tile:hover,
+.tool-tile:focus-visible {
+  background: var(--soft-hover);
+  border-color: var(--accent);
+}
+.tool-tile .study-object {
+  display: block;
+  width: 100px;
+  max-width: 100%;
+  height: 88px;
+  overflow: visible;
+}
+.tool-tile-title {
+  font: 1.3rem/1.4 var(--editorial);
+}
+.tool-tile-title > span {
+  color: var(--terracotta);
+  font: 0.85rem/1 var(--font-sans);
+}
+.tool-tile-description {
+  max-width: 22ch;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.study-room {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+  margin-top: 1.3rem;
+}
+.activity-companion {
+  position: sticky;
+  top: 1rem;
+  padding-top: 2.4rem;
+}
+.activity-companion .animated-mascot {
+  max-width: 180px;
+}
+.activity-workspace {
+  min-width: 0;
+}
+.activity-heading {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.activity-heading h2 {
+  margin-top: 0.5rem;
+  font: 2.25rem/1.2 var(--editorial);
+}
+.activity-heading > p:last-child {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+@media (max-width: 700px) {
+  .study-selector {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+  }
+  .selector-host {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0;
+  }
+  .selector-host .animated-mascot {
+    width: 150px;
+    flex-shrink: 0;
+  }
+  .selector-host .scene-caption {
+    margin: 0;
+    max-width: 11ch;
+    text-align: left;
+    font-size: 1rem;
+  }
+  .tool-tile {
+    padding: 0.85rem 0.5rem;
+  }
+  .tool-tile .study-object {
+    width: 85px;
+    height: 75px;
+  }
+  .tool-tile-title {
+    font-size: 1.1rem;
+  }
+  .study-room {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+  .activity-companion {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    gap: 1rem;
+  }
+  .activity-companion .animated-mascot {
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .activity-companion .scene-caption {
+    margin: 0;
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mascot-entrance {
+    transition: background 0.18s;
+  }
+  .mascot-entrance .mascot-torso {
+    transition: transform 0.25s;
+  }
+  .mascot-entrance:is(:hover, :focus-visible) .mascot-torso {
+    transform: translateY(-5px) rotate(-3deg);
+  }
+  .mascot-entrance:is(:hover, :focus-visible) .mascot-arm-right {
+    animation: mascot-wave 0.8s ease-in-out both;
+  }
+  .tool-tile {
+    transition:
+      background 0.18s,
+      transform 0.18s,
+      box-shadow 0.18s;
+  }
+  .tool-tile:is(:hover, :focus-visible) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 #141c142b;
+  }
+  .tool-tile .study-object > g {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.22s;
+  }
+  .tool-tile:is(:hover, :focus-visible) .study-object > g {
+    transform: rotate(-6deg) translateY(-2px);
+  }
+  .is-arriving .mascot-walker {
+    animation: mascot-walk-in 0.65s ease-out both;
+  }
+  .is-arriving .mascot-leg-left {
+    animation: mascot-step 0.2s ease-in-out 3 alternate;
+  }
+  .is-arriving .mascot-leg-right {
+    animation: mascot-step 0.2s ease-in-out 3 alternate-reverse;
+  }
+  .is-arriving .mascot-torso {
+    animation: mascot-bob 0.2s ease-in-out 3 alternate;
+  }
+  .is-arriving[data-pose="menu"] .mascot-bag-flap {
+    animation: mascot-open-bag 0.45s 0.12s ease-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-flying-note {
+    animation: mascot-note 0.65s 0.2s ease-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-arm-right {
+    animation: mascot-present 0.65s ease-out both;
+  }
+  .is-arriving[data-pose="podcast"] .mascot-headphones {
+    animation: mascot-accessory 0.55s 0.15s ease-out both;
+  }
+  .is-arriving[data-pose="podcast"] .mascot-arm-right {
+    animation: mascot-put-on-headphones 0.7s ease-in-out both;
+  }
+  .is-arriving[data-pose="map"] .mascot-glasses {
+    animation: mascot-accessory 0.45s 0.2s ease-out both;
+  }
+  .is-arriving .mascot-held-cards,
+  .is-arriving .mascot-held-paper {
+    animation: mascot-take-paper 0.45s 0.2s ease-out both;
+  }
+  @keyframes mascot-wave {
+    0% {
+      transform: rotate(28deg);
+    }
+    30%,
+    70% {
+      transform: rotate(-55deg);
+    }
+    50%,
+    100% {
+      transform: rotate(-27deg);
+    }
+  }
+  @keyframes mascot-walk-in {
+    from {
+      transform: translateX(-32px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes mascot-step {
+    from {
+      transform: rotate(-13deg);
+    }
+    to {
+      transform: rotate(13deg);
+    }
+  }
+  @keyframes mascot-bob {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-4px);
+    }
+  }
+  @keyframes mascot-open-bag {
+    from {
+      transform: rotate(0) scaleY(1);
+    }
+    to {
+      transform: rotate(-8deg) scaleY(-0.7);
+    }
+  }
+  @keyframes mascot-note {
+    0% {
+      opacity: 0;
+      transform: translate(34px, 177px);
+    }
+    30% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(65px, 90px) rotate(15deg);
+    }
+  }
+  @keyframes mascot-present {
+    from {
+      transform: rotate(28deg);
+    }
+    to {
+      transform: rotate(-25deg);
+    }
+  }
+  @keyframes mascot-put-on-headphones {
+    0% {
+      transform: rotate(28deg);
+    }
+    65% {
+      transform: rotate(-132deg);
+    }
+    100% {
+      transform: rotate(-105deg);
+    }
+  }
+  @keyframes mascot-accessory {
+    from {
+      opacity: 0;
+      transform: translateY(-28px) rotate(-7deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+  }
+  @keyframes mascot-take-paper {
+    from {
+      opacity: 0;
+      transform: translateY(25px) rotate(-8deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+  }
+}
+/* Contrasto dei gesti sulla cornice scura. */
+.mascot-arm > path:first-child,
+.mascot-leg > path:first-child {
+  stroke: #a7ba8f;
+}
+.entrance-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.entrance-hint > svg,
+.tool-tile-title > svg {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--terracotta);
+}
+.tool-tile-title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+@media (min-width: 701px) {
+  .study-room {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+}
+/* Una breve sequenza: raggiungi lo zaino, apri, estrai i quaderni. */
+.mascot-bag-book {
+  opacity: 0;
+  transform-origin: 50px 190px;
+}
+.mascot-book-left {
+  transform-origin: 103px 200px;
+}
+.mascot-open-book,
+.mascot-drafting-tools {
+  transform-origin: 105px 210px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .is-arriving[data-pose="menu"] .mascot-walker {
+    animation: mascot-fetch-bag 1.05s ease-in-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-torso {
+    animation: mascot-reach-bag 1.05s ease-in-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-arm-left {
+    animation: mascot-grab-bag 0.9s ease-in-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-bag {
+    animation: mascot-lift-bag 0.8s 0.15s ease-in-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-bag-flap {
+    animation: mascot-open-bag 0.35s 0.4s ease-out both;
+  }
+  .is-arriving[data-pose="menu"] .mascot-flying-note {
+    animation: none;
+  }
+  .is-arriving[data-pose="menu"] .mascot-bag-book {
+    animation: mascot-unpack-book 0.55s 0.65s ease-out both;
+  }
+  .is-arriving[data-pose="menu"] .bag-book-1 {
+    animation-delay: 0.76s;
+  }
+  .is-arriving[data-pose="menu"] .bag-book-2 {
+    animation-delay: 0.87s;
+  }
+  .tool-shelf .tool-tile {
+    animation: tool-unpack 0.3s calc(0.65s + var(--tool-order, 0) * 0.08s)
+      backwards;
+  }
+  .tool-shelf .tool-tile:focus-visible {
+    animation: none;
+  }
+  .is-arriving:not([data-pose="menu"]) .mascot-walker {
+    animation: mascot-walk-to-book 0.85s ease-out both;
+  }
+  .is-arriving .mascot-open-book {
+    animation: mascot-take-paper 0.35s 0.3s ease-out both;
+  }
+  .is-arriving .mascot-book-left {
+    animation: mascot-open-cover 0.45s 0.5s ease-out both;
+  }
+  .is-arriving .mascot-drafting-tools {
+    animation: mascot-take-paper 0.45s 0.35s ease-out both;
+  }
+  .activity-heading {
+    animation: activity-page-open 0.32s ease-out;
+    transform-origin: left center;
+  }
+  @keyframes mascot-fetch-bag {
+    0% {
+      transform: translateX(16px);
+    }
+    35%,
+    60% {
+      transform: translateX(-17px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes mascot-reach-bag {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    35%,
+    60% {
+      transform: rotate(-10deg) translateY(4px);
+    }
+  }
+  @keyframes mascot-grab-bag {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    35%,
+    65% {
+      transform: rotate(-24deg);
+    }
+  }
+  @keyframes mascot-lift-bag {
+    0%,
+    100% {
+      transform: translate(22px, 178px);
+    }
+    40%,
+    65% {
+      transform: translate(30px, 169px) rotate(-5deg);
+    }
+  }
+  @keyframes mascot-unpack-book {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(0);
+    }
+    20% {
+      opacity: 1;
+    }
+    75% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(45px, -100px) rotate(18deg);
+    }
+  }
+  @keyframes tool-unpack {
+    from {
+      opacity: 0.4;
+      transform: translateY(20px) rotate(-2deg) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes mascot-walk-to-book {
+    0% {
+      transform: translateX(-42px);
+    }
+    65% {
+      transform: translateX(5px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes mascot-open-cover {
+    from {
+      transform: scaleX(0.06);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes activity-page-open {
+    from {
+      opacity: 0.65;
+      transform: perspective(700px) rotateY(-9deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

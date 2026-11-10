@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Local generation diagnostics (source excerpts, never credentials)
 /.aula/
+
+# Recreated from the installed pdfjs-dist version before dev/build
+/public/vendor/pdfjs/

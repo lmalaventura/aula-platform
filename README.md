@@ -41,6 +41,22 @@ La guida operativa corrente è [docs/STUDIO_CONDIVISO.md](docs/STUDIO_CONDIVISO.
 applicazione della migrazione, preparazione dei contenuti, revisione e rilascio.
 Le vecchie guide di generazione personale descrivono il flusso storico.
 
+## Mappe e podcast
+
+La redazione locale permette di creare/importare mappe e aggiungere episodi
+MP3/WAV con trascrizione, capitoli e pagine fonte. I lettori pubblici funzionano
+senza AI. Sono disponibili demo tecniche locali, separate dai materiali reali.
+Generazione automatica di mappe e sintesi vocale ancora da collegare.
+Guida: [docs/MAPPE_E_PODCAST.md](docs/MAPPE_E_PODCAST.md).
+
+## Allenamento in modalità esame
+
+Le domande approvate si possono usare in sessioni con tempo e quantità scelti
+dallo studente, ripresa locale, correzione per argomento e ripasso degli errori.
+I dati rimangono nel browser e non sono sincronizzati fra dispositivi. Una demo
+tecnica in redazione permette di provare il flusso senza consumare quota AI.
+Guida: [docs/ALLENAMENTO.md](docs/ALLENAMENTO.md).
+
 ## Preparare e pubblicare le attività
 
 ```powershell
@@ -96,3 +112,30 @@ l’estrazione del testo nel CLI e sul server. Il provider della prima prova è 
 con Llama 3.3, soggetto alla [Llama 3.3 Community License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/LICENSE).
 **Built with Llama.** Non vengono distribuiti pesi del modello.
 Il codice mantiene la licenza ancora da definire indicata sopra.
+
+## Interfaccia editoriale
+
+Tema scuro caldo, ricerca degli insegnamenti con suggerimenti e mascotte come
+ingresso agli strumenti di studio. Appunti in evidenza, font di sistema e
+illustrazioni locali; nessuna dipendenza applicativa aggiunta.
+Guida e verifiche: [docs/INTERFACCIA.md](docs/INTERFACCIA.md).
+
+### Mascotte interattiva
+
+L’ingresso nella materia e lo spazio di studio usano un personaggio SVG
+articolato: saluto, zaino e accessori accompagnano pulsanti e attività reali.
+La scena è comune a tutte le materie, non richiede AI durante l’uso e rispetta
+il movimento ridotto. Prova locale in `/redazione`, nel blocco della demo.
+Dettagli e applicazione dell’aggiornamento: [docs/INTERFACCIA.md](docs/INTERFACCIA.md).
+
+### Lettore PDF integrato
+
+Le pagine delle risorse usano PDF.js per conservare il documento originale
+all’interno di una cornice di lettura. Controlli per pagina, zoom, segnalibri,
+testo selezionabile e schermo intero nella stessa pagina. Download del PDF
+originale. Nessuna dipendenza nuova: `predev` e `prebuild` preparano le risorse
+locali della versione già installata di `pdfjs-dist`; non servono CDN.
+La directory generata `public/vendor/pdfjs` è esclusa da Git ed ESLint.
+
+Verifica complessiva: `npm.cmd run check` (89 test più lint e build).
+Limiti e prova manuale del lettore: [docs/INTERFACCIA.md](docs/INTERFACCIA.md).

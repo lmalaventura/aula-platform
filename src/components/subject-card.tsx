@@ -1,38 +1,41 @@
 import Link from "next/link";
 import { getResourcesForSubject } from "@/lib/catalog/resources";
 import type { Subject } from "@/lib/catalog/types";
+import { UiIcon } from "./ui-icon";
+import { getPublishedBank, getCanonicalResource } from "@/lib/study/published";
+import { getPublishedTools } from "@/lib/learning-tools/published";
 
-type SubjectCardProps = {
-  subject: Subject;
-};
-
-export function SubjectCard({ subject }: SubjectCardProps) {
-  const titleId = `subject-${subject.slug}`;
+export function SubjectCard({ subject }: { subject: Subject }) {
   const count = getResourcesForSubject(subject.slug).length;
-  const resourceLabel = count === 1 ? "1 materiale disponibile" : `${count} materiali disponibili`;
-
+  const { bank } = getPublishedBank(subject.slug),
+    { tools } = getPublishedTools(subject.slug);
+  const labels = [
+    getCanonicalResource(subject.slug) ? "Appunti" : count ? "Documenti" : null,
+    bank?.quiz.length ? "Quiz" : null,
+    bank?.flashcards.length ? "Flashcard" : null,
+    tools.some((tool) => tool.input.kind === "map") ? "Mappe" : null,
+    tools.some((tool) => tool.input.kind === "podcast") ? "Podcast" : null,
+  ].filter(Boolean);
   return (
-    <Link
-      href={`/insegnamenti/${subject.slug}`}
-      className="group flex min-w-0 flex-col rounded-2xl border border-border bg-white p-6 hover:border-accent sm:p-8"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <span
-          aria-hidden="true"
-          className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 font-mono text-sm font-semibold text-accent"
-        >
+    <Link href={"/insegnamenti/" + subject.slug} className="subject-card group">
+      <div className="subject-card-top">
+        <span className="subject-stamp" aria-hidden="true">
           {subject.label}
         </span>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-muted">
-          {count > 0 ? resourceLabel : "Materiali in preparazione"}
+        <span className="text-xs text-muted">
+          {count
+            ? count + (count === 1 ? " materiale" : " materiali")
+            : "In preparazione"}
         </span>
       </div>
-      <h3 id={titleId} className="mt-6 text-xl font-semibold leading-7 tracking-tight group-hover:text-accent">
-        {subject.title}
-      </h3>
-      <p className="mt-3 text-sm leading-7 text-muted">{subject.description}</p>
-      <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-accent">
-        Apri insegnamento <span aria-hidden="true">→</span>
+      <h3 className="subject-title">{subject.title}</h3>
+      <p className="subject-available">
+        {labels.length
+          ? labels.join(" · ")
+          : "Stiamo preparando i primi materiali."}
+      </p>
+      <span className="subject-card-action">
+        Entra nella materia <UiIcon name="arrow" />
       </span>
     </Link>
   );

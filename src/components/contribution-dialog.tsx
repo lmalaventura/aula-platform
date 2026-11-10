@@ -4,9 +4,11 @@ import { ContributorPanel, type SubjectOption } from "./contributor-panel";
 export function ContributionDialog({
   config,
   subjects,
+  variant = "header",
 }: {
   config: { url: string; key: string } | null;
   subjects: SubjectOption[];
+  variant?: "header" | "inline";
 }) {
   const dialog = useRef<HTMLDialogElement>(null),
     title = useId();
@@ -20,7 +22,9 @@ export function ContributionDialog({
     <>
       <button
         type="button"
-        className="inline-flex min-h-12 items-center gap-2 text-sm font-medium text-accent"
+        className={
+          variant === "inline" ? "contribute-inline" : "contribute-trigger"
+        }
         onClick={open}
       >
         <span aria-hidden="true">＋</span> Proponi materiale
@@ -28,7 +32,7 @@ export function ContributionDialog({
       <dialog
         ref={dialog}
         aria-labelledby={title}
-        className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border border-border bg-white p-5 text-ink backdrop:bg-black/40 sm:p-8"
+        className="contribution-sheet m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border border-border bg-white p-5 text-ink backdrop:bg-black/40 sm:p-8"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}

@@ -2,14 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async headers() {
-    return ["/redazione", "/api/redazione"].map((source) => ({
-      source,
-      headers: [
-        { key: "X-Frame-Options", value: "DENY" },
-        { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
-        { key: "Cache-Control", value: "no-store" },
-      ],
-    }));
+    return ["/redazione", "/api/redazione", "/api/redazione/:path*"].map(
+      (source) => ({
+        source,
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "Cache-Control", value: "no-store" },
+        ],
+      }),
+    );
   },
   serverExternalPackages: ["pdfjs-dist"],
   outputFileTracingIncludes: {

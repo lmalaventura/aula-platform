@@ -1,25 +1,26 @@
 import Link from "next/link";
 import { ContributionDialog } from "./contribution-dialog";
+import { SiteNavigation } from "./site-navigation";
 import { getSubjects } from "@/lib/catalog";
 import { getPublicUploadConfig } from "@/lib/uploads/validation";
 
-type SiteHeaderProps = {
-  name: string;
-};
-
-export function SiteHeader({ name }: SiteHeaderProps) {
+export function SiteHeader({ name }: { name: string }) {
   return (
-    <header className="border-b border-border bg-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-4 sm:px-8">
-        <Link href="/" className="inline-flex min-h-12 items-center gap-3 font-semibold">
-          <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink text-xl text-white">{name.slice(0, 1).toUpperCase()}</span>
-          <span className="text-xl tracking-tight">{name}</span>
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Link href="/" className="wordmark" aria-label={name + " · homepage"}>
+          {name}
+          <span aria-hidden="true">.</span>
         </Link>
-        <nav aria-label="Navigazione principale" className="flex max-w-full flex-wrap items-center gap-x-5">
-          <Link href="/insegnamenti" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Insegnamenti</Link>
-          <Link href="/materiali" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Materiali</Link>
-          <ContributionDialog config={getPublicUploadConfig(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)} subjects={getSubjects().map(({ slug, title }) => ({ slug, title }))} />
-          <Link href="/#progetto" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Il progetto</Link>
+        <nav aria-label="Navigazione principale" className="site-navigation">
+          <SiteNavigation />
+          <ContributionDialog
+            config={getPublicUploadConfig(
+              process.env.NEXT_PUBLIC_SUPABASE_URL,
+              process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+            )}
+            subjects={getSubjects().map(({ slug, title }) => ({ slug, title }))}
+          />
         </nav>
       </div>
     </header>

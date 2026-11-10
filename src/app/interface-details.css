@@ -1,0 +1,271 @@
+/* Archivio, illustrazione di sfondo e risposte leggere alle azioni. */
+.home-hero {
+  isolation: isolate;
+  margin-top: 1rem;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+.hero-backdrop {
+  position: absolute;
+  inset: 0 1rem;
+  z-index: -1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 2rem;
+  background: linear-gradient(130deg, #2d3928, #263023 60%, #303b2b);
+  pointer-events: none;
+}
+.hero-background-art {
+  position: absolute;
+  width: 580px;
+  height: auto;
+  right: -125px;
+  bottom: -75px;
+  opacity: 0.22;
+  transform: rotate(-8deg);
+}
+.hero-paper-lines {
+  position: absolute;
+  left: -10px;
+  top: 45px;
+  width: 250px;
+  height: 290px;
+  color: var(--accent);
+  stroke: currentColor;
+  stroke-width: 1.6;
+  opacity: 0.12;
+  transform: rotate(-8deg);
+}
+.home-intro {
+  position: relative;
+}
+#subjects-title {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  letter-spacing: -0.035em;
+}
+.subject-card {
+  isolation: isolate;
+  margin-top: 0.45rem;
+}
+.subject-card::before {
+  content: "";
+  position: absolute;
+  inset: -7px 9px 6px 9px;
+  z-index: -1;
+  border: 1px solid var(--control-border);
+  border-radius: 0.4rem 1rem 0.4rem 0.4rem;
+  background: #394330;
+  transform: rotate(-1.2deg);
+  box-shadow: 3px -4px 0 -1px #535e47;
+}
+.subject-card::after {
+  width: 3.4rem;
+  height: 0.6rem;
+  top: -0.6rem;
+}
+.subject-title {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-weight: 550;
+  font-size: 1.35rem;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+.subject-header {
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  padding-bottom: 1.2rem;
+}
+.subject-header .page-title {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+}
+.subject-header .page-description {
+  margin-top: 0.65rem;
+}
+.subject-layout {
+  margin-top: 1.5rem;
+}
+.study-invitation {
+  padding: 1.15rem 1.3rem;
+}
+.study-invitation .mascot-entrance {
+  margin-top: 0.6rem;
+  padding: 0.4rem 0.3rem 0;
+  border: 0;
+  background: transparent;
+}
+.study-invitation .mascot-entrance .animated-mascot {
+  width: 195px;
+}
+.study-invitation .entrance-balloon {
+  font-size: 1.15rem;
+  padding: 0.55rem 0.8rem;
+}
+.study-invitation .entrance-ground {
+  display: none;
+}
+.study-availability {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.8;
+  text-align: center;
+}
+@media (min-width: 701px) {
+  .subject-layout > aside {
+    align-self: start;
+  }
+}
+@media (max-width: 700px) {
+  .hero-backdrop {
+    inset: 0 0.5rem;
+  }
+  .hero-background-art {
+    width: 390px;
+    right: -190px;
+    bottom: -30px;
+    opacity: 0.15;
+  }
+  .hero-paper-lines {
+    left: -125px;
+    opacity: 0.08;
+  }
+  .home-hero {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .subject-layout .study-invitation {
+    order: -1;
+  }
+  .study-invitation .mascot-entrance {
+    flex-direction: row-reverse;
+    max-width: none;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+  .study-invitation .mascot-entrance .animated-mascot {
+    width: 125px;
+    flex-shrink: 0;
+  }
+  .study-invitation h2 {
+    font-size: 1.5rem;
+    margin-top: 0.3rem;
+  }
+  .study-invitation .entrance-balloon {
+    font-size: 1.1rem;
+  }
+  .study-invitation .entrance-hint {
+    font-size: 0.6875rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .button-primary,
+  .button-secondary,
+  .contribute-trigger,
+  .contribute-inline,
+  .site-navigation a,
+  .pdf-toolbar button,
+  .pdf-toolbar a {
+    transition:
+      transform 0.16s ease,
+      background 0.16s ease,
+      border-color 0.16s ease;
+  }
+  .button-primary:active,
+  .button-secondary:active,
+  .contribute-trigger:active,
+  .tool-tile:active {
+    transform: translateY(1px) scale(0.98);
+  }
+  .contribute-trigger > span {
+    display: inline-block;
+    transition: transform 0.25s;
+  }
+  .contribute-trigger:hover > span,
+  .contribute-trigger:focus-visible > span {
+    transform: rotate(90deg);
+  }
+  .wordmark > span {
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+  .wordmark:hover > span {
+    transform: translateY(-3px);
+  }
+  .subject-card::before {
+    transition: transform 0.2s;
+  }
+  .subject-card:hover::before,
+  .subject-card:focus-visible::before {
+    transform: rotate(-2.4deg) translateY(-2px);
+  }
+  .contribution-sheet[open] {
+    animation: contribution-arrive 0.22s ease-out;
+  }
+  .contribution-sheet::backdrop {
+    animation: contribution-backdrop 0.18s ease-out;
+  }
+  @keyframes contribution-arrive {
+    from {
+      opacity: 0.4;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes contribution-backdrop {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+@media (min-width: 701px) {
+  .study-invitation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 185px;
+    column-gap: 0.6rem;
+    align-items: center;
+  }
+  .study-invitation > .eyebrow {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+  }
+  .study-invitation > h2 {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    font-size: 1.7rem;
+    line-height: 1.15;
+  }
+  .study-invitation > .mascot-entrance {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    flex-direction: column-reverse;
+    width: 185px;
+    margin: 0;
+  }
+  .study-invitation .mascot-entrance .animated-mascot {
+    width: 185px;
+  }
+  .study-invitation .entrance-balloon {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .study-invitation .entrance-hint {
+    font-size: 0.6875rem;
+    margin: 0;
+  }
+  .study-invitation > .study-availability {
+    grid-column: 1;
+    grid-row: 3;
+    text-align: left;
+  }
+}

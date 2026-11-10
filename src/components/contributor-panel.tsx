@@ -2,6 +2,7 @@
 import { useEffect, useId, useMemo, useState, type FormEvent } from "react";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { getBrowserUploadClient } from "@/lib/uploads/browser-client";
+import { PasswordField } from "./password-field";
 import { createUploadsRepository, uploadError } from "@/lib/uploads/repository";
 import type {
   ContributionReview,
@@ -11,9 +12,8 @@ import type {
 export type SubjectOption = { slug: string; title: string };
 const field =
   "mt-2 block min-h-12 w-full rounded-xl border border-border bg-white px-3 py-2 text-base";
-const action =
-  "inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-4 py-3 text-sm font-medium hover:bg-emerald-50 disabled:opacity-50";
-const primary = `${action} bg-ink text-white hover:bg-accent`;
+const action = "button-secondary";
+const primary = "button-primary";
 const reviewLabels = {
   pending: "In attesa di revisione",
   accepted: "Accettato per integrazione",
@@ -127,16 +127,7 @@ export function ContributorPanel({
                 autoComplete="username"
               />
             </label>
-            <label className="block text-sm font-medium">
-              Password
-              <input
-                className={field}
-                type="password"
-                name="password"
-                required
-                autoComplete="current-password"
-              />
-            </label>
+            <PasswordField />
             <button className={primary}>{busy ? "Accesso…" : "Accedi"}</button>
           </fieldset>
         </form>

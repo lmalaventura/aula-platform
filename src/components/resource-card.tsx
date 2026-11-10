@@ -1,34 +1,73 @@
 import Link from "next/link";
 import { formatFileSize } from "@/lib/catalog/format";
 import type { StudyResource } from "@/lib/catalog/resource-types";
+import { UiIcon } from "./ui-icon";
+import { BrandIllustration } from "./brand-illustration";
 
-type ResourceCardProps = {
+type Props = {
   resource: StudyResource;
-  headingLevel?: 3 | 4;
+  headingLevel?: 2 | 3 | 4;
   contextLabel?: string;
+  featured?: boolean;
 };
-
-export function ResourceCard({ resource, headingLevel = 4, contextLabel }: ResourceCardProps) {
-  const Heading = headingLevel === 3 ? "h3" : "h4";
-
+export function ResourceCard({
+  resource,
+  headingLevel = 4,
+  contextLabel,
+  featured = false,
+}: Props) {
+  const Heading = ("h" + headingLevel) as "h2" | "h3" | "h4";
   return (
-    <article className="h-full min-w-0 rounded-2xl border border-border bg-white p-6 sm:p-8">
-      {contextLabel && <p className="mb-3 text-sm font-medium leading-6 text-muted">{contextLabel}</p>}
-      <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+    <article
+      className={"resource-card" + (featured ? " resource-featured" : "")}
+    >
+      {featured && (
+        <BrandIllustration kind="hanging" className="document-companion" />
+      )}
+      <div className="resource-card-heading">
+        <div className="resource-mark" aria-hidden="true">
+          <UiIcon name="book" />
+        </div>
+        <div className="min-w-0">
+          <p className="eyebrow">
+            {featured
+              ? "Gli appunti condivisi"
+              : (contextLabel ?? "Materiale di studio")}
+          </p>
+          {featured && contextLabel && (
+            <p className="mt-1 text-xs leading-6 text-muted">{contextLabel}</p>
+          )}
+          <Heading className="resource-title">
+            <Link href={"/risorse/" + resource.id}>{resource.title}</Link>
+          </Heading>
+        </div>
+      </div>
+      <p className="mt-4 text-sm leading-7 text-muted">
+        {resource.description}
+      </p>
+      <p className="mt-4 text-xs leading-6 text-muted">
         PDF · {resource.pageCount} pagine · {formatFileSize(resource.byteSize)}
       </p>
-      <Heading className="mt-3 text-xl font-semibold leading-7">
-        <Link href={`/risorse/${resource.id}`} className="hover:text-accent hover:underline">{resource.title}</Link>
-      </Heading>
-      <p className="mt-3 text-sm leading-7 text-muted">{resource.description}</p>
-      <p className="mt-4 text-sm text-muted">{resource.authors.join(", ")} · A.A. {resource.academicYear}</p>
-      <p className="mt-2 text-sm font-medium text-accent">{resource.status}</p>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <Link href={`/risorse/${resource.id}`} className="inline-flex min-h-12 items-center rounded-xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-accent" aria-label={`Leggi documento: ${resource.title}`}>
-          Leggi documento
+      <p className="text-xs leading-6 text-muted">
+        {resource.authors.join(", ")} · A.A. {resource.academicYear}
+      </p>
+      <p className="mt-2 text-xs leading-6 text-accent">{resource.status}</p>
+      <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
+        <Link
+          href={"/risorse/" + resource.id}
+          className="button-primary"
+          aria-label={"Leggi documento: " + resource.title}
+        >
+          {featured ? "Leggi gli appunti" : "Leggi documento"}{" "}
+          <UiIcon name="arrow" />
         </Link>
-        <a href={resource.fileUrl} download className="inline-flex min-h-12 items-center rounded-xl border border-border px-5 py-3 text-sm font-semibold text-accent hover:border-accent" aria-label={`Scarica PDF: ${resource.title}`}>
-          Scarica PDF
+        <a
+          href={resource.fileUrl}
+          download
+          className="button-secondary"
+          aria-label={"Scarica PDF: " + resource.title}
+        >
+          <UiIcon name="download" /> Scarica PDF
         </a>
       </div>
     </article>

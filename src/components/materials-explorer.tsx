@@ -3,9 +3,14 @@
 import { useState } from "react";
 import { ResourceCard } from "@/components/resource-card";
 import { filterResources } from "@/lib/catalog/search";
-import type { FilterOption, ResourceFilters, ResourceSearchItem } from "@/lib/catalog/search";
+import type {
+  FilterOption,
+  ResourceFilters,
+  ResourceSearchItem,
+} from "@/lib/catalog/search";
 
 type MaterialsExplorerProps = {
+  initialQuery?: string;
   items: readonly ResourceSearchItem[];
   subjects: readonly FilterOption[];
   categories: readonly FilterOption[];
@@ -17,17 +22,31 @@ const emptyFilters: ResourceFilters = {
   categoryId: "",
 };
 
-export function MaterialsExplorer({ items, subjects, categories }: MaterialsExplorerProps) {
-  const [filters, setFilters] = useState<ResourceFilters>(emptyFilters);
+export function MaterialsExplorer({
+  items,
+  subjects,
+  categories,
+  initialQuery = "",
+}: MaterialsExplorerProps) {
+  const [filters, setFilters] = useState<ResourceFilters>({
+    ...emptyFilters,
+    query: initialQuery,
+  });
   const results = filterResources(items, filters);
-  const hasFilters = Boolean(filters.query || filters.subjectSlug || filters.categoryId);
-  const resultLabel = results.length === 1 ? "1 materiale trovato" : `${results.length} materiali trovati`;
+  const hasFilters = Boolean(
+    filters.query || filters.subjectSlug || filters.categoryId,
+  );
+  const resultLabel =
+    results.length === 1
+      ? "1 materiale trovato"
+      : `${results.length} materiali trovati`;
 
   return (
     <>
       <noscript>
         <p className="mb-6 rounded-xl border border-border bg-white p-5 text-sm leading-7">
-          Ricerca e filtri richiedono JavaScript. Puoi comunque consultare e scaricare i materiali elencati.
+          Ricerca e filtri richiedono JavaScript. Puoi comunque consultare e
+          scaricare i materiali elencati.
         </p>
       </noscript>
       <form
@@ -38,13 +57,21 @@ export function MaterialsExplorer({ items, subjects, categories }: MaterialsExpl
       >
         <div className="grid items-end gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <div className="min-w-0">
-            <label htmlFor="materials-query" className="block text-sm font-semibold">Cerca nei materiali</label>
+            <label
+              htmlFor="materials-query"
+              className="block text-sm font-semibold"
+            >
+              Cerca nei materiali
+            </label>
             <input
               id="materials-query"
               type="search"
+              maxLength={200}
               name="q"
               value={filters.query}
-              onChange={(event) => setFilters({ ...filters, query: event.target.value })}
+              onChange={(event) =>
+                setFilters({ ...filters, query: event.target.value })
+              }
               placeholder="Es. NumPy, Flutter, autore…"
               aria-describedby="materials-search-help"
               aria-controls="materials-results"
@@ -52,31 +79,53 @@ export function MaterialsExplorer({ items, subjects, categories }: MaterialsExpl
             />
           </div>
           <div className="min-w-0">
-            <label htmlFor="materials-subject" className="block text-sm font-semibold">Insegnamento</label>
+            <label
+              htmlFor="materials-subject"
+              className="block text-sm font-semibold"
+            >
+              Insegnamento
+            </label>
             <select
               id="materials-subject"
               name="subject"
               value={filters.subjectSlug}
-              onChange={(event) => setFilters({ ...filters, subjectSlug: event.target.value })}
+              onChange={(event) =>
+                setFilters({ ...filters, subjectSlug: event.target.value })
+              }
               aria-controls="materials-results"
               className="mt-2 min-h-12 w-full min-w-0 truncate rounded-xl border border-border bg-white px-3 py-3 text-base text-foreground"
             >
               <option value="">Tutti gli insegnamenti</option>
-              {subjects.map((subject) => <option key={subject.value} value={subject.value}>{subject.label}</option>)}
+              {subjects.map((subject) => (
+                <option key={subject.value} value={subject.value}>
+                  {subject.label}
+                </option>
+              ))}
             </select>
           </div>
           <div className="min-w-0">
-            <label htmlFor="materials-category" className="block text-sm font-semibold">Categoria</label>
+            <label
+              htmlFor="materials-category"
+              className="block text-sm font-semibold"
+            >
+              Categoria
+            </label>
             <select
               id="materials-category"
               name="category"
               value={filters.categoryId}
-              onChange={(event) => setFilters({ ...filters, categoryId: event.target.value })}
+              onChange={(event) =>
+                setFilters({ ...filters, categoryId: event.target.value })
+              }
               aria-controls="materials-results"
               className="mt-2 min-h-12 w-full min-w-0 truncate rounded-xl border border-border bg-white px-3 py-3 text-base text-foreground"
             >
               <option value="">Tutte le categorie</option>
-              {categories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
+              {categories.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
             </select>
           </div>
           <button
@@ -88,14 +137,34 @@ export function MaterialsExplorer({ items, subjects, categories }: MaterialsExpl
             Azzera filtri
           </button>
         </div>
-        <p id="materials-search-help" className="mt-4 text-sm leading-7 text-muted">
-          Cerca in titolo, descrizione, autore, categoria e insegnamento. I risultati si aggiornano mentre scrivi.
+        <p
+          id="materials-search-help"
+          className="mt-4 text-sm leading-7 text-muted"
+        >
+          Ricerca nei titoli e nei metadati dei materiali, non nel testo dei
+          PDF.
         </p>
       </form>
-      <section id="materials-results" aria-labelledby="materials-results-title" className="mt-9">
+      <section
+        id="materials-results"
+        aria-labelledby="materials-results-title"
+        className="mt-9"
+      >
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 id="materials-results-title" className="text-2xl font-semibold tracking-tight">Risultati</h2>
-          <p role="status" aria-live="polite" aria-atomic="true" className="text-sm text-muted">{resultLabel}</p>
+          <h2
+            id="materials-results-title"
+            className="text-2xl font-semibold tracking-tight"
+          >
+            Risultati
+          </h2>
+          <p
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="text-sm text-muted"
+          >
+            {resultLabel}
+          </p>
         </div>
         {results.length > 0 ? (
           <ul className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -112,7 +181,9 @@ export function MaterialsExplorer({ items, subjects, categories }: MaterialsExpl
         ) : (
           <div className="mt-5 rounded-2xl border border-dashed border-border bg-white p-7 sm:p-9">
             <h3 className="text-lg font-semibold">
-              {items.length === 0 ? "Non sono ancora presenti materiali" : "Nessun materiale corrisponde alla ricerca"}
+              {items.length === 0
+                ? "Non sono ancora presenti materiali"
+                : "Nessun materiale corrisponde alla ricerca"}
             </h3>
             <p className="mt-3 text-sm leading-7 text-muted">
               {items.length === 0

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LearnerStudy } from "@/components/learner-study";
+import { connection } from "next/server";
+import { BrandIllustration } from "@/components/brand-illustration";
+import { StudyModes } from "@/components/study-modes";
+import { getPublishedTools } from "@/lib/learning-tools/published";
 import { getSubjectBySlug, getSubjects } from "@/lib/catalog";
 import { getPublishedBank } from "@/lib/study/published";
 import { getSiteConfig } from "@/lib/site";
-import { connection } from "next/server";
+
 type Props = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -14,7 +17,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const subject = getSubjectBySlug((await params).slug);
   return {
-    title: `Studia: ${subject?.title ?? "Materia non trovata"} | ${getSiteConfig().name}`,
+    title:
+      "Studia: " +
+      (subject?.title ?? "Materia non trovata") +
+      " | " +
+      getSiteConfig().name,
   };
 }
 export default async function StudyPage({ params }: Props) {
@@ -23,73 +30,60 @@ export default async function StudyPage({ params }: Props) {
     subject = getSubjectBySlug(slug);
   if (!subject) notFound();
   const { bank, outdated } = getPublishedBank(slug);
+  const { tools, outdated: outdatedTools } = getPublishedTools(slug);
   return (
     <main
       id="contenuto"
       tabIndex={-1}
-      className="mx-auto w-full max-w-3xl flex-1 px-5 py-10 sm:px-8 sm:py-14"
+      className="page-container study-workspace !max-w-4xl"
     >
-      <Link
-        href={`/insegnamenti/${slug}`}
-        className="inline-flex min-h-12 items-center text-sm font-medium text-accent hover:underline"
-      >
-        ← Materiali di {subject.title}
+      <Link href={"/insegnamenti/" + slug} className="breadcrumb-link">
+        ← {subject.title}
       </Link>
-      <header className="mt-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-          {subject.title}
-        </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
-          Studia e ripassa
-        </h1>
-        <p className="mt-4 leading-8 text-muted">
-          Scegli un argomento o ripassa tutto il materiale disponibile. Le
-          attività sono già preparate e condivise.
-        </p>
+      <header className="editorial-header">
+        <div>
+          <p className="eyebrow">{subject.title}</p>
+          <h1 className="page-title">
+            Trova il tuo ritmo<span className="text-terracotta">.</span>
+          </h1>
+          <p className="page-description">
+            Scegli un’attività e gli argomenti su cui concentrarti.
+          </p>
+        </div>
       </header>
-      {bank ? (
+      {bank || tools.length ? (
         <>
-          <LearnerStudy bank={bank} />
-          <details className="mt-10 border-t border-border pt-5 text-sm leading-7 text-muted">
-            <summary className="cursor-pointer">Fonti e aggiornamento</summary>
-            <p className="mt-3">
-              Fonte: {bank.sourceTitle}. Revisione redazionale del{" "}
-              {new Intl.DateTimeFormat("it-IT", {
-                dateStyle: "medium",
-                timeZone: "Europe/Rome",
-              }).format(new Date(bank.reviewedAt))}
-              . Le attività sono state preparate con AI e controllate dalla
-              redazione; possono comunque contenere errori.
+          {bank && bank.coveredUnits < bank.availableUnits && (
+            <p className="coverage-note">
+              Raccolta parziale: le attività coprono una parte degli appunti
+              disponibili, non l’intero programma d’esame.
             </p>
-            {bank.coveredUnits < bank.availableUnits && (
-              <p className="mt-3">
-                La raccolta è in aggiornamento e copre una parte degli appunti
-                attuali. Non rappresenta ancora l’intero programma d’esame.
-              </p>
-            )}
-            <p className="mt-3">Built with Llama.</p>
-            <Link
-              className="inline-flex min-h-12 items-center underline"
-              href={`/risorse/${bank.sourceId}`}
-            >
-              Leggi gli appunti condivisi
-            </Link>
-          </details>
+          )}
+          <StudyModes bank={bank} tools={tools} />
+          {(outdated || outdatedTools > 0) && (
+            <p className="mt-6 text-sm leading-7 text-muted">
+              Alcuni strumenti sono in aggiornamento dopo la modifica degli
+              appunti.
+            </p>
+          )}
         </>
       ) : (
-        <section className="mt-8 rounded-2xl border border-border bg-white p-6">
-          <h2 className="text-xl font-semibold">Attività in preparazione</h2>
-          <p className="mt-3 leading-8 text-muted">
-            {outdated
-              ? "Gli appunti sono stati aggiornati. La redazione sta riallineando le attività alla nuova versione."
-              : "Le attività appariranno qui dopo la revisione e la pubblicazione della redazione."}
-          </p>
-          <Link
-            href={`/insegnamenti/${slug}`}
-            className="mt-4 inline-flex min-h-12 items-center font-medium text-accent underline"
-          >
-            Apri i materiali della materia
-          </Link>
+        <section className="empty-study">
+          <BrandIllustration />
+          <div>
+            <h2 className="text-2xl">Qui stiamo preparando il ripasso.</h2>
+            <p className="mt-3 text-sm leading-7 text-muted">
+              {outdated || outdatedTools > 0
+                ? "Gli appunti sono cambiati: le attività devono essere aggiornate e revisionate."
+                : "Gli strumenti appariranno dopo la preparazione e la revisione dei contenuti."}
+            </p>
+            <Link
+              href={"/insegnamenti/" + slug}
+              className="button-primary mt-5"
+            >
+              Intanto, apri i materiali
+            </Link>
+          </div>
         </section>
       )}
     </main>

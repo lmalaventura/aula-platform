@@ -14,7 +14,13 @@
     "study:test": "node --test scripts/study/study.test.mts",
     "uploads:test": "node --test scripts/uploads/uploads.test.mts",
     "web-study:test": "node --test scripts/study/web-study.test.mts scripts/study/document.test.mts scripts/editor/shared-study.test.mts",
-    "check": "npm run lint && npm run study:test && npm run uploads:test && npm run web-study:test && npm run build"
+    "check": "npm run lint && npm run study:test && npm run uploads:test && npm run web-study:test && npm run learning-tools:test && npm run practice:test && npm run ui:test && npm run reader:test && npm run build",
+    "learning-tools:test": "node --test scripts/learning-tools/learning-tools.test.mts",
+    "practice:test": "node --test scripts/practice/practice.test.mts",
+    "ui:test": "node --test scripts/ui/ui.test.mts",
+    "predev": "node scripts/prepare-pdf-viewer.mjs",
+    "prebuild": "node scripts/prepare-pdf-viewer.mjs",
+    "reader:test": "node --test scripts/reader/reader.test.mts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",

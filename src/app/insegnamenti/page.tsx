@@ -1,58 +1,70 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SubjectCard } from "@/components/subject-card";
+import { SubjectSearch } from "@/components/subject-search";
+import { BrandIllustration } from "@/components/brand-illustration";
 import { getSubjects } from "@/lib/catalog";
+import { searchSubjects, subjectQuery } from "@/lib/catalog/subject-search";
 import { getSiteConfig } from "@/lib/site";
-
 export const metadata: Metadata = {
-  title: `Insegnamenti | ${getSiteConfig().name}`,
+  title: "Insegnamenti | " + getSiteConfig().name,
 };
-
-export default function SubjectsPage() {
-  const site = getSiteConfig();
-  const subjects = getSubjects();
-
+export default async function SubjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
+  const query = subjectQuery((await searchParams).q),
+    subjects = getSubjects(),
+    found = searchSubjects(subjects, query);
   return (
-    <main
-      id="contenuto"
-      tabIndex={-1}
-      className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-8 sm:py-14"
-    >
-      <Link
-        href="/"
-        className="inline-flex min-h-12 items-center text-sm font-medium text-accent hover:underline"
-      >
-        ← Torna alla homepage
+    <main id="contenuto" tabIndex={-1} className="page-container">
+      <Link href="/" className="breadcrumb-link">
+        ← Homepage
       </Link>
-
-      <p className="mt-7 text-xs font-semibold uppercase tracking-widest text-accent">
-        {site.institution}
-      </p>
-
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight">
-        Insegnamenti
-      </h1>
-
-      <p className="mt-4 max-w-2xl text-base leading-8 text-muted">
-        {site.programme}. Scegli una materia per accedere al suo spazio di
-        studio.
-      </p>
-
-      <section aria-labelledby="catalog-title" className="mt-9">
+      <header className="editorial-header">
+        <div>
+          <p className="eyebrow">{getSiteConfig().programme}</p>
+          <h1 className="page-title">
+            Scegli la tua materia<span className="text-terracotta">.</span>
+          </h1>
+          <p className="page-description">
+            Apri il quaderno. Al resto pensiamo insieme.
+          </p>
+        </div>
+        <div className="mascot-peek">
+          <BrandIllustration />
+        </div>
+      </header>
+      <div className="catalog-search">
+        <SubjectSearch key={query} subjects={subjects} initialQuery={query} />
+      </div>
+      <section aria-labelledby="catalog-title" className="mt-8">
         <h2 id="catalog-title" className="sr-only">
           Elenco degli insegnamenti
         </h2>
-
-        {subjects.length > 0 ? (
+        {query && (
+          <p className="mb-5 text-sm text-muted">Risultati per “{query}”</p>
+        )}
+        {found.length ? (
           <div className="grid gap-5 md:grid-cols-2">
-            {subjects.map((subject) => (
+            {found.map((subject) => (
               <SubjectCard key={subject.slug} subject={subject} />
             ))}
           </div>
         ) : (
-          <p className="rounded-2xl border border-border bg-white p-8 text-muted">
-            Non sono ancora presenti insegnamenti.
-          </p>
+          <div className="empty-study">
+            <BrandIllustration kind="hanging" />
+            <div>
+              <h2 className="text-2xl">Qui non abbiamo trovato una materia.</h2>
+              <p className="mt-3 leading-7 text-muted">
+                Prova un altro nome oppure riparti dal catalogo.
+              </p>
+              <Link href="/insegnamenti" className="button-secondary mt-4">
+                Vedi tutte le materie
+              </Link>
+            </div>
+          </div>
         )}
       </section>
     </main>

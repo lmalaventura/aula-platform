@@ -2,88 +2,124 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ResourceCard } from "@/components/resource-card";
+import { StudyEntrance } from "@/components/study-entrance";
 import { getSubjectBySlug, getSubjects } from "@/lib/catalog";
-import { getResourceCategories, getResourcesForSubject } from "@/lib/catalog/resources";
+import {
+  getResourceCategories,
+  getResourcesForSubject,
+} from "@/lib/catalog/resources";
 import { getSiteConfig } from "@/lib/site";
-import { getCanonicalResource } from "@/lib/study/published";
+import { getCanonicalResource, getPublishedBank } from "@/lib/study/published";
+import { getPublishedTools } from "@/lib/learning-tools/published";
 
-type SubjectPageProps = {
-  params: Promise<{ slug: string }>;
-};
-
+type Props = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
-
 export function generateStaticParams() {
-  return getSubjects().map((subject) => ({ slug: subject.slug }));
+  return getSubjects().map(({ slug }) => ({ slug }));
 }
-
-export async function generateMetadata({ params }: SubjectPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const subject = getSubjectBySlug(slug);
-  const site = getSiteConfig();
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const subject = getSubjectBySlug((await params).slug);
   return {
-    title: `${subject?.title ?? "Insegnamento non trovato"} | ${site.name}`,
-    description: subject?.description ?? site.description,
+    title:
+      (subject?.title ?? "Materia non trovata") + " | " + getSiteConfig().name,
+    description: subject?.description,
   };
 }
-
-export default async function SubjectPage({ params }: SubjectPageProps) {
-  const { slug } = await params;
-  const subject = getSubjectBySlug(slug);
+export default async function SubjectPage({ params }: Props) {
+  const { slug } = await params,
+    subject = getSubjectBySlug(slug);
   if (!subject) notFound();
-
-  const site = getSiteConfig();
-  const primary = getCanonicalResource(slug);
-  const resources = getResourcesForSubject(slug).filter((r) => r.categoryId !== "appunti" || r.id === primary?.id);
+  const primary = getCanonicalResource(slug),
+    { bank } = getPublishedBank(slug),
+    { tools } = getPublishedTools(slug);
+  const resources = getResourcesForSubject(slug).filter(
+    (r) => r.id !== primary?.id && r.categoryId !== "appunti",
+  );
   const groups = getResourceCategories()
     .map((category) => ({
       category,
-      resources: resources.filter((resource) => resource.categoryId === category.id),
+      resources: resources.filter((r) => r.categoryId === category.id),
     }))
-    .filter((group) => group.resources.length > 0);
-
+    .filter((g) => g.resources.length);
+  const available = [
+    bank ? "Quiz, flashcard e allenamento" : null,
+    tools.some((t) => t.input.kind === "map") ? "Mappe concettuali" : null,
+    tools.some((t) => t.input.kind === "podcast") ? "Podcast" : null,
+  ].filter(Boolean);
   return (
-    <main id="contenuto" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
+    <main id="contenuto" tabIndex={-1} className="page-container">
       <nav aria-label="Percorso di navigazione">
-        <ol className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
-          <li>
-            <Link href="/insegnamenti" className="inline-flex min-h-12 items-center font-medium text-accent hover:underline">
-              Insegnamenti
-            </Link>
-          </li>
-          <li aria-hidden="true" className="text-muted">/</li>
-          <li aria-current="page" className="text-muted">{subject.title}</li>
-        </ol>
+        <Link href="/insegnamenti" className="breadcrumb-link">
+          ← Insegnamenti
+        </Link>
       </nav>
-      <header className="mt-7 rounded-3xl bg-ink p-7 text-white sm:p-10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-emerald-200">{site.programme}</p>
-        <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{subject.title}</h1>
-        <p className="mt-5 max-w-2xl text-base leading-8 text-slate-200">{subject.description}</p>
+      <header className="editorial-header subject-header">
+        <div>
+          <p className="eyebrow">{getSiteConfig().programme}</p>
+          <h1 className="page-title">{subject.title}</h1>
+          <p className="page-description">{subject.description}</p>
+        </div>
+        <span className="subject-header-label" aria-hidden="true">
+          {subject.label}
+        </span>
       </header>
-      <section aria-labelledby="study-title" className="mt-8 rounded-2xl border border-border bg-white p-6">
-        <h2 id="study-title" className="text-xl font-semibold">Studia e ripassa</h2>
-        <p className="mt-3 leading-7 text-muted">Quiz e flashcard già preparati, su tutti gli argomenti disponibili o sulla parte che vuoi ripassare.</p>
-        <Link href={`/insegnamenti/${slug}/studio`} className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-emerald-100 px-5 py-3 text-sm font-semibold text-ink hover:bg-emerald-200">Apri gli strumenti di studio →</Link>
-      </section>
-      <section aria-labelledby="materials-title" className="mt-10">
-        <h2 id="materials-title" className="text-2xl font-semibold tracking-tight">Materiali di studio</h2>
-        {resources.length === 0 ? (
-          <p className="mt-5 rounded-2xl border border-dashed border-border bg-white p-8 text-muted">
-            Non sono ancora disponibili materiali per questa materia.
+      <div className="subject-layout">
+        <section aria-labelledby="notes-title">
+          <h2 id="notes-title" className="mb-5 text-2xl">
+            Da qui si comincia
+          </h2>
+          {primary ? (
+            <ResourceCard resource={primary} headingLevel={3} featured />
+          ) : (
+            <p className="empty-panel">
+              Gli appunti condivisi sono in preparazione.
+            </p>
+          )}
+        </section>
+        <aside aria-labelledby="study-title" className="study-invitation">
+          <p className="eyebrow">Un altro modo di studiare</p>
+          <h2 id="study-title" className="mt-3 text-3xl">
+            Facciamo un ripasso?
+          </h2>
+          <StudyEntrance
+            compact
+            href={"/insegnamenti/" + slug + "/studio"}
+            preparing={!available.length}
+          />
+          <p className="study-availability">
+            {available.length
+              ? available.join(" · ")
+              : "Strumenti in preparazione. Intanto puoi leggere gli appunti."}
           </p>
-        ) : (
+        </aside>
+      </div>
+      {groups.length > 0 && (
+        <section aria-labelledby="other-title" className="mt-12">
+          <h2 id="other-title" className="text-3xl">
+            Per andare oltre
+          </h2>
           <div className="mt-6 space-y-8">
-            {groups.map(({ category, resources: categoryResources }) => (
-              <section key={category.id} aria-labelledby={`category-${category.id}`}>
-                <h3 id={`category-${category.id}`} className="mb-4 text-lg font-semibold">{category.title}</h3>
-                <div className="space-y-4">
-                  {categoryResources.map((resource) => <ResourceCard key={resource.id} resource={resource} />)}
+            {groups.map(({ category, resources }) => (
+              <section
+                key={category.id}
+                aria-labelledby={"category-" + category.id}
+              >
+                <h3
+                  id={"category-" + category.id}
+                  className="mb-4 text-lg font-semibold"
+                >
+                  {category.title}
+                </h3>
+                <div className="grid gap-5 md:grid-cols-2">
+                  {resources.map((resource) => (
+                    <ResourceCard key={resource.id} resource={resource} />
+                  ))}
                 </div>
               </section>
             ))}
           </div>
-        )}
-      </section>
+        </section>
+      )}
     </main>
   );
 }

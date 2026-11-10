@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
+import { ExamPractice } from "./exam-practice";
 import {
   selectBank,
   type StudyBank,
@@ -7,9 +8,8 @@ import {
   type BankQuestion,
 } from "@/lib/study/bank";
 
-const action =
-  "inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-5 py-3 text-sm font-semibold hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50";
-const primary = `${action} bg-ink text-white hover:bg-accent`;
+const action = "button-secondary";
+const primary = "button-primary";
 function shuffle<T>(values: T[]): T[] {
   const list = [...values];
   for (let i = list.length - 1; i > 0; i--) {
@@ -27,14 +27,16 @@ function Source({ item, url }: { item: BankCard | BankQuestion; url: string }) {
       <blockquote className="mt-3 border-l-2 border-emerald-200 pl-4">
         {item.quote}
       </blockquote>
-      <a
-        className="mt-2 inline-flex min-h-12 items-center underline"
-        href={`${url}#page=${item.page}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Apri gli appunti · pagina {item.page}
-      </a>
+      {url && (
+        <a
+          className="mt-2 inline-flex min-h-12 items-center underline"
+          href={`${url}#page=${item.page}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Apri gli appunti · pagina {item.page}
+        </a>
+      )}
     </details>
   );
 }
@@ -90,10 +92,12 @@ function Quiz({
   questions,
   bank,
   onPractice,
+  demo = false,
 }: {
   questions: BankQuestion[];
   bank: StudyBank;
   onPractice: (topic: string) => void;
+  demo?: boolean;
 }) {
   const [position, setPosition] = useState(0),
     [answers, setAnswers] = useState<Record<string, number>>({}),
@@ -148,7 +152,7 @@ function Quiz({
                 Risposta corretta: {q.choices[q.correctIndex]}
               </p>
               <p className="mt-3 leading-7 text-muted">{q.explanation}</p>
-              <Source item={q} url={bank.sourceUrl} />
+              <Source item={q} url={demo ? "" : bank.sourceUrl} />
             </article>
           ))}
         </div>
@@ -222,10 +226,18 @@ function Quiz({
     </section>
   );
 }
-export function LearnerStudy({ bank }: { bank: StudyBank }) {
+export function LearnerStudy({
+  bank,
+  mode,
+  demo = false,
+}: {
+  bank: StudyBank;
+  mode?: "cards" | "quiz" | "exam";
+  demo?: boolean;
+}) {
   const [topicId, setTopicId] = useState(""),
     [session, setSession] = useState<{
-      mode: "cards" | "quiz";
+      mode: "cards" | "quiz" | "exam";
       cards: BankCard[];
       questions: BankQuestion[];
       id: number;
@@ -236,16 +248,16 @@ export function LearnerStudy({ bank }: { bank: StudyBank }) {
     setTopicId(topic);
     setSession(null);
   }
-  function start(mode: "cards" | "quiz") {
+  function start(next: "cards" | "quiz" | "exam") {
     setSession({
-      mode,
+      mode: next,
       cards: shuffle(selected.flashcards),
       questions: shuffle(selected.quiz),
       id: Date.now(),
     });
   }
   return (
-    <div className="mt-8 min-w-0 [overflow-wrap:anywhere]">
+    <div className="mt-6 min-w-0 [overflow-wrap:anywhere]">
       <label htmlFor={scopeId} className="block text-sm font-medium">
         Cosa vuoi ripassare?
       </label>
@@ -253,34 +265,63 @@ export function LearnerStudy({ bank }: { bank: StudyBank }) {
         id={scopeId}
         className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-base"
         value={topicId}
-        onChange={(e) => chooseTopic(e.target.value)}
+        onChange={(event) => chooseTopic(event.target.value)}
       >
         <option value="">Tutti gli argomenti disponibili</option>
-        {bank.topics.map((t) => (
-          <option value={t.id} key={t.id}>
-            {t.title}
+        {bank.topics.map((topic) => (
+          <option value={topic.id} key={topic.id}>
+            {topic.title}
           </option>
         ))}
       </select>
-      <p className="mt-3 text-sm leading-7 text-muted">
-        {selected.quiz.length} domande · {selected.flashcards.length} flashcard.
-        Il quiz completo della selezione usa tutte le domande disponibili.
-      </p>
+      {mode !== "exam" && (
+        <p className="mt-3 text-sm leading-7 text-muted">
+          {mode === "cards" ? (
+            <>{selected.flashcards.length} flashcard</>
+          ) : mode === "quiz" ? (
+            <>
+              {selected.quiz.length}{" "}
+              {selected.quiz.length === 1 ? "domanda" : "domande"}
+            </>
+          ) : (
+            <>
+              {selected.quiz.length} domande · {selected.flashcards.length}{" "}
+              flashcard
+            </>
+          )}{" "}
+          nella selezione.
+        </p>
+      )}
       <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          className={session?.mode === "quiz" ? primary : action}
-          disabled={!selected.quiz.length}
-          onClick={() => start("quiz")}
-        >
-          Inizia quiz
-        </button>
-        <button
-          className={session?.mode === "cards" ? primary : action}
-          disabled={!selected.flashcards.length}
-          onClick={() => start("cards")}
-        >
-          Ripassa con le flashcard
-        </button>
+        {(!mode || mode === "quiz") && (
+          <button
+            className={primary}
+            disabled={!selected.quiz.length}
+            onClick={() => start("quiz")}
+          >
+            {session?.mode === "quiz" ? "Ricomincia il quiz" : "Inizia quiz"}
+          </button>
+        )}
+        {(!mode || mode === "cards") && (
+          <button
+            className={mode === "cards" ? primary : action}
+            disabled={!selected.flashcards.length}
+            onClick={() => start("cards")}
+          >
+            {session?.mode === "cards"
+              ? "Ricomincia il ripasso"
+              : "Ripassa con le flashcard"}
+          </button>
+        )}
+        {!mode && (
+          <button
+            className={action}
+            disabled={!selected.quiz.length}
+            onClick={() => start("exam")}
+          >
+            Allenamento in modalità esame
+          </button>
+        )}
       </div>
       {session?.mode === "quiz" && (
         <Quiz
@@ -288,10 +329,18 @@ export function LearnerStudy({ bank }: { bank: StudyBank }) {
           questions={session.questions}
           bank={bank}
           onPractice={chooseTopic}
+          demo={demo}
         />
       )}
       {session?.mode === "cards" && (
-        <Cards key={session.id} cards={session.cards} url={bank.sourceUrl} />
+        <Cards
+          key={session.id}
+          cards={session.cards}
+          url={demo ? "" : bank.sourceUrl}
+        />
+      )}
+      {(mode === "exam" || session?.mode === "exam") && (
+        <ExamPractice bank={bank} scope={topicId} demo={demo} />
       )}
     </div>
   );
