@@ -5,6 +5,7 @@ import { ResourceCard } from "@/components/resource-card";
 import { getSubjectBySlug, getSubjects } from "@/lib/catalog";
 import { getResourceCategories, getResourcesForSubject } from "@/lib/catalog/resources";
 import { getSiteConfig } from "@/lib/site";
+import { getCanonicalResource } from "@/lib/study/published";
 
 type SubjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -32,7 +33,8 @@ export default async function SubjectPage({ params }: SubjectPageProps) {
   if (!subject) notFound();
 
   const site = getSiteConfig();
-  const resources = getResourcesForSubject(slug);
+  const primary = getCanonicalResource(slug);
+  const resources = getResourcesForSubject(slug).filter((r) => r.categoryId !== "appunti" || r.id === primary?.id);
   const groups = getResourceCategories()
     .map((category) => ({
       category,
@@ -60,7 +62,7 @@ export default async function SubjectPage({ params }: SubjectPageProps) {
       </header>
       <section aria-labelledby="study-title" className="mt-8 rounded-2xl border border-border bg-white p-6">
         <h2 id="study-title" className="text-xl font-semibold">Studia e ripassa</h2>
-        <p className="mt-3 leading-7 text-muted">Quiz e flashcard collegati alle fonti, quando disponibili.</p>
+        <p className="mt-3 leading-7 text-muted">Quiz e flashcard già preparati, su tutti gli argomenti disponibili o sulla parte che vuoi ripassare.</p>
         <Link href={`/insegnamenti/${slug}/studio`} className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-emerald-100 px-5 py-3 text-sm font-semibold text-ink hover:bg-emerald-200">Apri gli strumenti di studio →</Link>
       </section>
       <section aria-labelledby="materials-title" className="mt-10">

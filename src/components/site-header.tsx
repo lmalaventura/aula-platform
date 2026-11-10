@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { ContributionDialog } from "./contribution-dialog";
+import { getSubjects } from "@/lib/catalog";
+import { getPublicUploadConfig } from "@/lib/uploads/validation";
 
 type SiteHeaderProps = {
   name: string;
@@ -15,7 +18,7 @@ export function SiteHeader({ name }: SiteHeaderProps) {
         <nav aria-label="Navigazione principale" className="flex max-w-full flex-wrap items-center gap-x-5">
           <Link href="/insegnamenti" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Insegnamenti</Link>
           <Link href="/materiali" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Materiali</Link>
-          <Link href="/contribuisci" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Contribuisci</Link>
+          <ContributionDialog config={getPublicUploadConfig(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)} subjects={getSubjects().map(({ slug, title }) => ({ slug, title }))} />
           <Link href="/#progetto" className="inline-flex min-h-12 items-center text-sm font-medium text-muted hover:text-accent">Il progetto</Link>
         </nav>
       </div>

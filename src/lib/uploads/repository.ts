@@ -16,6 +16,12 @@ export function uploadError(error: unknown): string {
 export function createUploadsRepository(client: SupabaseClient<UploadDatabase>) {
   const bucket = client.storage.from(UPLOAD_BUCKET);
   return {
+    async reviews(ids: string[]) {
+      if (!ids.length) return [];
+      const { data, error } = await client.from("aula_contribution_reviews").select("*").in("upload_id", ids);
+      if (error) throw error;
+      return data;
+    },
     async canContribute() {
       const { data, error } = await client.rpc("aula_can_contribute");
       if (error) throw error;

@@ -18,6 +18,7 @@ export type Upload = {
 export type UploadInsert = Pick<Upload,
   "id" | "subject_slug" | "title" | "author_name" | "original_name" | "byte_size" | "sha256" | "rights_confirmed"
 >;
+export type ContributionReview = { upload_id: string; status: "pending" | "accepted" | "changes_requested" | "rejected"; note: string; reviewed_at: string };
 
 // Contratto del piccolo schema SQL, senza CLI o generazione di tipi obbligatorie.
 export type UploadDatabase = {
@@ -26,6 +27,7 @@ export type UploadDatabase = {
       aula_uploads: { Row: Upload; Insert: UploadInsert; Update: never; Relationships: [] };
       aula_contributors: { Row: { user_id: string; enabled: boolean }; Insert: never; Update: never; Relationships: [] };
       aula_study_jobs: { Row: StudyJob; Insert: never; Update: never; Relationships: [] };
+      aula_contribution_reviews: { Row: ContributionReview; Insert: ContributionReview; Update: Partial<ContributionReview>; Relationships: [] };
     };
     Views: { aula_study_latest: { Row: StudyJobSummary; Relationships: [] } };
     Functions: {

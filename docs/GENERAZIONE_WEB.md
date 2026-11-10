@@ -1,5 +1,13 @@
 # Generazione web da PDF — incremento completo
 
+> Guida storica, superata dal flusso di [studio condiviso e redazione](STUDIO_CONDIVISO.md).
+> La generazione personale da Contribuisci è disabilitata. Per lavorare sul
+> progetto seguire la guida corrente, senza riattivare questa API.
+
+Aggiornamento del 9 novembre: questa guida descrive la raccolta iniziale.
+Per indicizzare il documento e generare altre raccolte sulle sezioni scelte,
+vedere [STUDIO_PER_SEZIONI.md](STUDIO_PER_SEZIONI.md).
+
 Obiettivo: dal caricamento in Contribuisci partono estrazione e generazione sul
 server; flashcard e quiz vengono conservati nel database e riaperti dal sito.
 Il codice del generatore è comune a tutti gli insegnamenti e condiviso con il CLI.

@@ -194,3 +194,125 @@ Primo contesto: magistrale in Informatica e Innovazione Digitale, UniUrb.
 - Tracciamento della funzione verificato: worker PDF incluso, dipendenze tracciate circa 5,22 MB; nessuna versione di dipendenza preesistente cambiata.
 - npm audit del 2 novembre 2026: 16 vulnerabilità note segnalate.
 - Le 16 segnalazioni moderate dell’audit completo sono propagate da minimatch/ESLint nella catena di sviluppo preesistente; audit runtime zero. Revisione dedicata della catena lint da pianificare, senza downgrade automatici.
+
+## Checkpoint Production e studio per sezioni — 9 novembre 2026
+
+- Utente: correzione configurazione confermata funzionante; dopo la promozione,
+  confermato anche il funzionamento sul dominio principale.
+- GitHub verificato: master e feat/web-study-generation sul commit acfc1e7;
+  nessuna divergenza da recuperare prima del nuovo incremento.
+- Nuovo incremento preparato su feat/document-sections nell'ambiente di
+  sviluppo: indice del PDF completo entro 250 pagine/un milione di caratteri,
+  ricerca nei titoli/testi, raccolte indipendenti sulle sezioni scelte.
+- Titoli dai segnalibri del PDF, fallback numerato; parti brevi raggruppate,
+  lunghe suddivise entro quattro pagine/frammenti e 18.000 caratteri.
+- PDF Machine Learning del repository: 60 pagine esaminate, 35 sezioni
+  generabili; pagine escluse esplicitate. Non è una certificazione di copertura
+  di ogni concetto, di correttezza scientifica o di fedeltà di formule/figure.
+- Indice preparato senza AI; stessa pipeline study-v2 per ciascuna sezione,
+  sei flashcard e quattro quesiti per raccolta, con fonti letterali controllate.
+- Nessuna nuova dipendenza, variabile, piattaforma o implementazione per materia.
+- Nuova migrazione 202611090001_document_sections.sql: firma RPC invariata,
+  quota separata di cinque indici e cinque lavori AI in 24 ore per account;
+  cache riutilizzata; richieste concorrenti per sezioni diverse segnalate busy.
+- Stessa tabella lavori e RLS proprietario/abilitazione; indice nel risultato
+  JSON versionato. Il client invia soltanto upload/ID sezione; fonte e versione
+  sono selezionate e verificate dal server, con controllo SHA-256 del PDF.
+- Raccolte iniziali, generatore CLI e sito precedente compatibili; nessun dato
+  o file esistente riscritto. La generazione completa automatica di tutte le
+  sezioni rimane futura: ora si sceglie la parte da studiare.
+- Verifiche: 47 test Node, lint e build; 12 prove SQL su PGlite/Postgres con
+  fixture Auth/Storage; nove verifiche HTTP/browser con server Next e parser
+  PDF reali e servizi remoti simulati; sei stati axe senza violazioni.
+- Verificato il riuso dopo reload, la sezione oltre pagina quaranta, le fonti
+  private, le quote, i rifiuti di accesso/input, il logout e i layout fino a
+  320 px. Nessuna chiamata ai servizi reali dell'utente eseguita qui.
+- Audit del 9 novembre: zero vulnerabilità note nelle dipendenze runtime;
+  otto moderate nel percorso di sviluppo, riconducibili a minimatch/ESLint.
+  Nessuna versione di dipendenza modificata; manutenzione separata da pianificare.
+- Da fare sul portatile: applicare pacchetto e nuova migrazione, run check,
+  prova locale con account reale; poi commit/push del ramo e verifica Preview.
+- Istruzioni complete: docs/STUDIO_PER_SEZIONI.md.
+
+## Correzione del prodotto: studio condiviso e redazione
+
+- Richiesta dell'utente: una piattaforma comune di studio, non un generatore
+  personale per ogni PDF caricato. Incrementi funzionali completi, con un unico
+  checkpoint dell'utente per l'intero percorso.
+- Base remota verificata: master/feat/web-study-generation ad acfc1e7. Il ramo
+  locale feat/shared-study include anche l'incremento per sezioni già provato
+  dall'utente ma non presente nel remoto. Commit e deployment sono da eseguire
+  sul suo computer dopo l'applicazione e il controllo del nuovo blocco.
+- Una fonte principale configurata per insegnamento in study-sources.json.
+  Esami, esercitazioni e progetti rimangono materiali distinti. Le proposte non
+  aggiungono automaticamente un'altra dispensa al catalogo.
+- Studio pubblico senza account o chiamate AI: banca approvata, selezione di
+  tutto il materiale disponibile o di un macroargomento, quiz progressivo,
+  spiegazioni/fonti, flashcard e ripasso mirato dagli errori. Nessun numero
+  fisso per corso e nessuna equivalenza tra quantità di domande e copertura
+  scientifica o del programma d'esame.
+- Contribuzione in dialogo dal pulsante + Proponi materiale; accesso dei
+  collaboratori conservato per identificare la whitelist. Upload privati in
+  attesa di revisione, esiti e indicazioni leggibili dall'autore. Nessuna
+  generazione durante il caricamento; POST /api/studio/genera risponde 410.
+- Redazione inizialmente locale: study:prepare analizza il PDF completo e
+  prepara le parti mancanti con la pipeline comune. Cache per contenuto e
+  ripresa del lavoro interrotto; bozze e revisioni in .aula/editor, fuori Git.
+  Nessuna nuova dipendenza applicativa o variabile d'ambiente.
+- Pagina /redazione e API solo in sviluppo. Dev su 127.0.0.1, controllo Host e
+  Origin, token per processo e protezione dagli iframe. In produzione sono
+  disabilitate; il sito pubblico continua a funzionare con il PC spento.
+- Revisione, esclusione, raggruppamento dei macroargomenti e pubblicazione
+  esplicita in src/content/study-banks. Pubblicazione parziale solo con scelta
+  esplicita; PDF cambiato senza una banca corrispondente mostra aggiornamento.
+  Cambiare le attività annulla la vecchia approvazione; le raccolte identiche
+  possono essere riutilizzate anche dopo altre modifiche al PDF.
+- Migrazione 202611090002_contribution_reviews.sql: lettura riservata
+  all'autore abilitato, scrittura editoriale con service_role, rimozione a
+  cascata con l'upload. I dati delle vecchie generazioni non vengono eliminati.
+- La redazione può scaricare e valutare i contributi. Accettare per integrazione
+  non fonde i documenti: aggiornare il sorgente LaTeX/PDF rimane un intervento
+  editoriale. content:sync aggiorna i metadati del PDF senza contarli a mano.
+- Nessuna integrazione automatica LaTeX, revisione scientifica automatica o
+  scansione antimalware realizzata. L'upload anonimo e la redazione online sono
+  incrementi futuri; podcast e mappe non fanno parte di questo blocco.
+- Verifiche di integrazione eseguite: 16 controlli SQL con migrazioni reali in
+  PGlite/Postgres e fixture Auth/Storage; nove scenari HTTP/browser su Next
+  reale, con Supabase simulato e nessuna chiamata a un modello reale. Dieci
+  stati axe senza violazioni rilevate, inclusi layout 320/390/768/1440 px.
+  Non è una certificazione di accessibilità o di correttezza didattica.
+- I dati sintetici delle prove sono esclusi dal pacchetto. La prima banca
+  effettiva deve essere preparata con la configurazione Cloudflare dell'utente,
+  revisionata e pubblicata. Guida corrente: docs/STUDIO_CONDIVISO.md.
+- Controllo finale del codice senza banche sintetiche: 53 test Node superati,
+  lint, TypeScript e build di produzione riusciti. Audit runtime eseguito:
+  zero vulnerabilità note segnalate; nessuna dipendenza aggiornata.
+
+## Preparazione reale bloccata e diagnostica — 10 novembre 2026
+
+- Log dell'utente: entrambe le materie si interrompono alla prima raccolta;
+  tutte le 53 prove, lint e build riescono. Nessun codice HTTP nel messaggio
+  disponibile: la causa remota non è ancora determinata.
+- Individuata la perdita della diagnostica in scripts/editor/repository.mts:
+  il client Cloudflare preserva HTTP e codici, ma prepareDraft li rimpiazzava
+  con un messaggio generico. Correzione: riportare solo stato/codici e cause
+  di rete riconosciute, senza token, account o messaggi remoti arbitrari.
+- Nessun nuovo tentativo automatico, cambio modello o piano; le raccolte già
+  pronte rimangono conservate. Configurazione AI mancante fermata alla prima
+  parte, evitando di ripetere il medesimo errore su tutte le parti.
+- Passo sul portatile: applicare la correzione e riprovare machine-learning
+  con --max-units 1; leggere l'errore effettivo prima di modificare il servizio.
+  Non serve ripetere le migrazioni o intervenire sul deployment per questa
+  preparazione locale.
+- Tre regressioni riprodotte prima della correzione e superate dopo: HTTP e
+  codici persi, causa di rete nascosta, configurazione mancante ripetuta sulle
+  parti successive. Controllo completo finale riuscito: 56 test Node, lint,
+  TypeScript e build. Servizio AI simulato; causa dell'errore reale ancora da
+  ricevere dal portatile.
+
+## Checkpoint: sviluppo indipendente dalla quota AI
+- Codice verificato con lint, test e build.
+- Generazione reale bloccata: Cloudflare HTTP 429/4006, quota gratuita esaurita.
+- Preparazione completa delle banche e verifica didattica ancora da completare.
+- Decisione: salvare il blocco corrente e continuare le funzionalita indipendenti dal provider.
+- Prossimo blocco: basi riutilizzabili per mappe concettuali e podcast.

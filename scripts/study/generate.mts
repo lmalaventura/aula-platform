@@ -13,10 +13,11 @@ export type StudySource = {
   subjectTitle: string;
   sourceSha256: string;
   sourcePages: SourcePage[];
+  generatorVersion?: string;
 };
 
 export function generationFingerprint(source: StudySource): string {
-  return createHash("sha256").update(JSON.stringify({ ...source, model: STUDY_MODEL, version: STUDY_VERSION })).digest("hex");
+  return createHash("sha256").update(JSON.stringify({ ...source, model: STUDY_MODEL, version: source.generatorVersion ?? STUDY_VERSION })).digest("hex");
 }
 
 export type RejectedDraft = { attempt: number; reason: string; raw: unknown };
@@ -31,7 +32,7 @@ export async function createStudyKit(source: StudySource, generate: StudyGenerat
       const draft = validateStudyDraft(resolveDraftEvidence(raw, passages), source.sourcePages);
       validateDraftQuality(draft);
       return validateStudyKit({
-        ...draft, schemaVersion: 1, generatorVersion: STUDY_VERSION, generatedAt: new Date().toISOString(),
+        ...draft, schemaVersion: 1, generatorVersion: source.generatorVersion ?? STUDY_VERSION, generatedAt: new Date().toISOString(),
         provider: "cloudflare", model: STUDY_MODEL, fingerprint: generationFingerprint(source),
         resourceId: source.resourceId, subjectSlug: source.subjectSlug,
         sourceSha256: source.sourceSha256, sourcePages: source.sourcePages,

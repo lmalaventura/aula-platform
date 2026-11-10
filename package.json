@@ -4,14 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "study:generate": "node --env-file-if-exists=.env.local scripts/generate-study.mts",
+    "study:prepare": "node --env-file-if-exists=.env.local scripts/prepare-shared-study.mts",
+    "content:sync": "node scripts/sync-materials.mts",
     "study:test": "node --test scripts/study/study.test.mts",
     "uploads:test": "node --test scripts/uploads/uploads.test.mts",
-    "web-study:test": "node --test scripts/study/web-study.test.mts",
+    "web-study:test": "node --test scripts/study/web-study.test.mts scripts/study/document.test.mts scripts/editor/shared-study.test.mts",
     "check": "npm run lint && npm run study:test && npm run uploads:test && npm run web-study:test && npm run build"
   },
   "dependencies": {

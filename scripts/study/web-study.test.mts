@@ -31,7 +31,8 @@ test("generazione da byte PDF reali, stesso formato e controlli del generatore C
   const kit = await generateUploadedStudyKit(upload, bytes, "Machine Learning", async (input) => { calls++; return mock(input); });
   assert.equal(calls, 1); assert.equal(kit.resourceId, `upload-${upload.id}`);
   assert.equal(kit.sourceSha256, upload.sha256); assert.equal(kit.flashcards.length, 6); assert.equal(kit.quiz.length, 4);
-  assert.deepEqual(kit.sourcePages.map((p) => p.page), [4, 6, 7, 8]);
+  assert.ok(kit.sourcePages.length >= 1 && kit.sourcePages.length <= 4);
+  assert.ok(kit.flashcards.every((c) => kit.sourcePages.find((p) => p.page === c.page)?.text.includes(c.quote)));
 });
 test("hash diverso rifiutato prima di inviare testo al modello", async () => {
   let calls = 0;

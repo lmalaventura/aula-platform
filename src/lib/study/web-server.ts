@@ -5,6 +5,7 @@ import { getPublicUploadConfig, UPLOAD_BUCKET } from "../uploads/validation";
 import { getSubjectBySlug } from "../catalog";
 import { STUDY_VERSION } from "./schema";
 import type { StudyJob } from "./web-types";
+import { DOCUMENT_VERSION, sectionVersion, validateDocumentIndex, type DocumentSection } from "./document";
 
 function configuration() {
   const publicConfig = getPublicUploadConfig(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
@@ -51,7 +52,11 @@ async function smallBody(request: Request) {
     const value: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
     const id = (value as { uploadId?: unknown } | null)?.uploadId;
     if (typeof id !== "string" || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(id)) throw new Error("invalid");
-    return id;
+    const mode = (value as { mode?: unknown }).mode ?? "legacy";
+    if (typeof mode !== "string" || !["legacy", "index", "section"].includes(mode)) throw new Error("invalid");
+    const sectionId = (value as { sectionId?: unknown }).sectionId;
+    if (mode === "section" && (typeof sectionId !== "string" || !/^s-[a-f0-9]{16}$/.test(sectionId))) throw new Error("invalid");
+    return { uploadId: id, mode, sectionId };
   } catch (error) { if (error instanceof HttpError) throw error; throw new HttpError(400, "invalid_request"); }
   finally { reader.releaseLock(); }
 }
@@ -73,16 +78,27 @@ export async function handleStudyGeneration(request: Request, schedule: (work: (
     const ownerId = identity.data.user.id;
     const permission = await userClient.rpc("aula_can_contribute");
     if (permission.error || permission.data !== true) throw new HttpError(403, "forbidden");
-    const uploadId = await smallBody(request);
+    const { uploadId, mode, sectionId } = await smallBody(request);
     const result = await userClient.from("aula_uploads").select("*").eq("id", uploadId).eq("owner_id", ownerId).eq("status", "stored").single();
     if (result.error || !result.data) throw new HttpError(404, "upload_missing");
     // Client privilegiato separato: non riceve il token utente e non arriva al browser.
     const admin = createClient<UploadDatabase>(config.url, config.secret, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }, global: { fetch: timeoutFetch },
     });
-    const claim = await admin.rpc("aula_claim_study_job", { p_upload_id: uploadId, p_owner_id: ownerId, p_version: STUDY_VERSION });
+    let section: DocumentSection | undefined;
+    if (mode === "section") {
+      const prepared = await admin.from("aula_study_jobs").select("kit").eq("upload_id", uploadId).eq("owner_id", ownerId).eq("generator_version", DOCUMENT_VERSION).eq("status", "ready").maybeSingle();
+      if (prepared.error || !prepared.data?.kit) throw new HttpError(409, "index_required");
+      const index = validateDocumentIndex(prepared.data.kit);
+      if (index.resourceId !== `upload-${uploadId}` || index.sourceSha256 !== result.data.sha256 || index.subjectSlug !== result.data.subject_slug) throw new HttpError(409, "index_required");
+      section = index.sections.find((s) => s.id === sectionId);
+      if (!section?.canGenerate) throw new HttpError(400, "section_unavailable");
+    }
+    const version = mode === "index" ? DOCUMENT_VERSION : section ? sectionVersion(section) : STUDY_VERSION;
+    const claim = await admin.rpc("aula_claim_study_job", { p_upload_id: uploadId, p_owner_id: ownerId, p_version: version });
     if (claim.error) {
-      if (claim.error.message === "AULA_DAILY_LIMIT") throw new HttpError(429, "daily_limit");
+      if (claim.error.message === "AULA_DAILY_LIMIT") throw new HttpError(429, mode === "index" ? "preparation_limit" : "daily_limit");
+      if (claim.error.message === "AULA_UPLOAD_BUSY") throw new HttpError(409, "upload_busy");
       if (claim.error.message === "AULA_FORBIDDEN") throw new HttpError(403, "forbidden");
       if (claim.error.message === "AULA_NOT_FOUND") throw new HttpError(404, "upload_missing");
       throw new HttpError(503, "storage_unavailable");
@@ -97,14 +113,21 @@ export async function handleStudyGeneration(request: Request, schedule: (work: (
           if (access.error || access.data?.enabled !== true) throw new Error("access_revoked");
           const file = await admin.storage.from(UPLOAD_BUCKET).download(upload.object_path);
           if (file.error || !file.data) throw new Error("source_missing");
-          const { createCloudflareGenerator } = await import("../../../scripts/study/cloudflare.mts");
-          const { generateUploadedStudyKit } = await import("./web-core");
-          const generator = createCloudflareGenerator({ CLOUDFLARE_ACCOUNT_ID: config.accountId, CLOUDFLARE_API_TOKEN: config.token });
-          kit = await generateUploadedStudyKit(upload as Upload, new Uint8Array(await file.data.arrayBuffer()), getSubjectBySlug(upload.subject_slug)?.title ?? upload.subject_slug, generator);
+          const { generateUploadedStudyKit, verifyUploadedSource } = await import("./web-core");
+          const bytes = new Uint8Array(await file.data.arrayBuffer());
+          verifyUploadedSource(upload as Upload, bytes);
+          if (mode === "index") {
+            const { extractDocumentIndex } = await import("../../../scripts/study/document.mts");
+            kit = await extractDocumentIndex(bytes, { resourceId: `upload-${upload.id}`, subjectSlug: upload.subject_slug, sourceSha256: upload.sha256 });
+          } else {
+            const { createCloudflareGenerator } = await import("../../../scripts/study/cloudflare.mts");
+            const generator = createCloudflareGenerator({ CLOUDFLARE_ACCOUNT_ID: config.accountId, CLOUDFLARE_API_TOKEN: config.token });
+            kit = await generateUploadedStudyKit(upload as Upload, bytes, getSubjectBySlug(upload.subject_slug)?.title ?? upload.subject_slug, generator, section);
+          }
         } catch (error) {
           status = "failed";
           const known = error as { code?: string; message?: string };
-          code = typeof known.code === "string" ? known.code : known.message === "access_revoked" ? "access_revoked" : "processing_failed";
+          code = typeof known.code === "string" ? known.code : ["access_revoked", "document_limit", "source_unsupported"].includes(known.message ?? "") ? known.message! : "processing_failed";
           console.error("Aula: elaborazione non completata", { jobId: job.id, code });
         }
         try {
